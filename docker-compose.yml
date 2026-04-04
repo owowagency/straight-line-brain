@@ -56,6 +56,20 @@ services:
       minio:
         condition: service_healthy
 
+  mcp:
+    build: .
+    command: python mcp_server.py --remote
+    environment:
+      BREIN_URL: http://api:8000
+      BREIN_API_KEY: ${BREIN_API_KEY:-}
+      MCP_HOST: "0.0.0.0"
+      MCP_PORT: "8001"
+      MCP_TRANSPORT: streamable-http
+    ports:
+      - "8001:8001"
+    depends_on:
+      - api
+
 volumes:
   pgdata:
   minio_data:
