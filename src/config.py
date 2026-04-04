@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     embedding_model: str = "BAAI/bge-m3"
     embedding_dimension: int = 1024
 
+    # API Security
+    api_keys: str = ""  # Format: "key1:agent_id1,key2:agent_id2"
+    require_api_key: bool = False
+
 
 @lru_cache
 def get_settings() -> Settings:

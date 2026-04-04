@@ -40,4 +40,4 @@ docker compose exec api alembic upgrade head
 - `tests/` — Pytest test suite
 
 ## Current Phase
-Phase 4: Query Planner — Intelligente Routering
+Phase 5: Permissies — Tool Scoping per Agent
