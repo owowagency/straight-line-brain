@@ -1,7 +1,8 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
+from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class AnalyticsRecordCreate(BaseModel):
@@ -21,3 +22,21 @@ class AnalyticsIngestRequest(BaseModel):
 class AnalyticsIngestResponse(BaseModel):
     created: int
     status: str
+
+
+class SummarizeRequest(BaseModel):
+    source: str
+    period_start: date
+    period_end: date
+
+
+class SummarizeResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    source: str
+    period_start: date
+    period_end: date
+    summary: str
+    insights: dict | None = None
+    created_at: datetime
