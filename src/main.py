@@ -1,13 +1,23 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from src.db.engine import engine
 from src.endpoints import brain, ingest, knowledge, registry_api, semantic, structured
+from src.storage.minio_service import MinIOService
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Ensure MinIO bucket exists
+    try:
+        minio = MinIOService.get_instance()
+        await minio.ensure_bucket()
+    except Exception:
+        logger.warning("Could not connect to MinIO — bucket creation skipped")
     yield
     await engine.dispose()
 
