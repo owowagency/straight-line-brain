@@ -118,6 +118,78 @@ Na registratie heeft Claude toegang tot deze tools:
 | `list_active_endpoints` | Actieve dynamische endpoints |
 | `detect_query_patterns` | Terugkerende patronen detecteren |
 
+## Optie 3: Remote MCP Server (voor UPPR.OS agents)
+
+De MCP server kan ook als **hosted remote server** draaien via Streamable HTTP.
+UPPR.OS agents (of andere MCP clients) verbinden dan via HTTP — geen lokale Python nodig.
+
+### Via Docker Compose (aanbevolen)
+
+De MCP server draait automatisch als service in Docker Compose:
+
+```bash
+docker compose up -d
+# API op :8000, MCP server op :8001
+```
+
+UPPR.OS agents verbinden naar:
+```
+http://localhost:8001/mcp
+# Of publiek: https://brein.uppr.dev:8001/mcp
+```
+
+### Handmatig starten
+
+```bash
+python mcp_server.py --remote
+# Of met environment variabelen:
+MCP_TRANSPORT=streamable-http MCP_PORT=8001 python mcp_server.py
+```
+
+### UPPR.OS Agent configuratie
+
+In je UPPR.OS agent config, voeg de MCP server toe als remote tool provider:
+
+```json
+{
+  "mcpServers": {
+    "digitaal-brein": {
+      "url": "http://brein.uppr.dev:8001/mcp"
+    }
+  }
+}
+```
+
+### Productie deployment
+
+Voor productie (VPS/cloud):
+
+```bash
+# 1. Clone repo op de server
+git clone <repo> && cd Digitaal_Brein
+
+# 2. Configureer .env
+cp .env.example .env
+# Pas BREIN_URL, API_KEYS, etc. aan
+
+# 3. Start alles
+docker compose up -d
+
+# 4. (Optioneel) Nginx reverse proxy voor HTTPS
+# brein.uppr.dev:8000 → API
+# brein.uppr.dev:8001 → MCP server
+```
+
+### Environment variabelen
+
+| Variabele | Standaard | Beschrijving |
+|-----------|-----------|-------------|
+| `BREIN_URL` | `http://localhost:8000` | URL van de Brein API |
+| `BREIN_API_KEY` | (leeg) | API key voor authenticatie |
+| `MCP_HOST` | `0.0.0.0` | Host waarop MCP server luistert |
+| `MCP_PORT` | `8001` | Port voor remote MCP server |
+| `MCP_TRANSPORT` | (leeg) | Zet op `streamable-http` voor remote mode |
+
 ## Testen
 
 Na configuratie kun je het testen in Claude Code:

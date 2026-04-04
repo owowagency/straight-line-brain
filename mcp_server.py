@@ -4,26 +4,38 @@ MCP Server for the UPPR Digitaal Brein.
 Exposes all brein endpoints as MCP tools that Claude can call directly.
 Communicates with the running Brein API via HTTP.
 
-Usage:
-    # Start the brein API first:
-    docker compose up -d
+Two modes:
+  1. Local (stdio):   python mcp_server.py
+     → For Claude Code / Claude Desktop via local config
 
-    # Then register this MCP server in Claude Code or Claude Desktop config.
-    # See README or docs/MCP_SETUP.md for instructions.
+  2. Remote (HTTP):   python mcp_server.py --remote
+     → Hosted MCP server on port 8001 (Streamable HTTP)
+     → UPPR.OS agents connect via: http://brein.uppr.dev:8001/mcp
+     → Also available as docker compose service
+
+Usage:
+    docker compose up -d          # Start brein API + remote MCP server
+    python mcp_server.py          # Local stdio mode
+    python mcp_server.py --remote # Remote HTTP mode
 """
 
 import json
 import os
+import sys
 
 import httpx
 from mcp.server.fastmcp import FastMCP
 
 BREIN_URL = os.getenv("BREIN_URL", "http://localhost:8000")
 API_KEY = os.getenv("BREIN_API_KEY", "")
+MCP_HOST = os.getenv("MCP_HOST", "0.0.0.0")
+MCP_PORT = int(os.getenv("MCP_PORT", "8001"))
 
 mcp = FastMCP(
     "UPPR Digitaal Brein",
     instructions="Knowledge layer voor AI agents — bedrijfskennis, analytics, semantic search. Gebruik deze tools om het Digitaal Brein te bevragen en te vullen.",
+    host=MCP_HOST,
+    port=MCP_PORT,
 )
 
 
@@ -388,4 +400,10 @@ async def detect_query_patterns(
 
 
 if __name__ == "__main__":
-    mcp.run()
+    if "--remote" in sys.argv or os.getenv("MCP_TRANSPORT") == "streamable-http":
+        # Remote mode: hosted MCP server via Streamable HTTP
+        # UPPR.OS agents connect to http://<host>:<port>/mcp
+        mcp.run(transport="streamable-http")
+    else:
+        # Local mode: stdio transport for Claude Code / Claude Desktop
+        mcp.run()
