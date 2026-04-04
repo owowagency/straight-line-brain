@@ -1,3 +1,4 @@
+import time
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -16,9 +17,113 @@ from src.schemas.knowledge import (
     KnowledgeEntryResponse,
     KnowledgeEntryUpdate,
 )
+from src.services.query_logger import log_query
 
 router = APIRouter()
 chunker = ChunkingService()
+
+
+# ---------------------------------------------------------------------------
+# Narrow "fast lane" endpoints — direct DB lookups
+# ---------------------------------------------------------------------------
+
+
+@router.get("/icp", response_model=list[KnowledgeEntryResponse])
+async def get_icp(
+    segment: str | None = Query(None),
+    session: AsyncSession = Depends(get_session),
+):
+    """Return ICP profiles, optionally filtered by segment name."""
+    t0 = time.perf_counter()
+    query = (
+        select(KnowledgeEntry)
+        .where(KnowledgeEntry.type == "icp", KnowledgeEntry.is_active.is_(True))
+        .options(selectinload(KnowledgeEntry.chunks))
+    )
+    if segment:
+        query = query.where(KnowledgeEntry.title.ilike(f"%{segment}%"))
+    result = await session.execute(query)
+    entries = result.scalars().all()
+
+    ms = int((time.perf_counter() - t0) * 1000)
+    await log_query(session, "knowledge/icp", f"segment={segment}", response_time_ms=ms)
+    await session.commit()
+    return [_entry_to_response(e) for e in entries]
+
+
+@router.get("/company", response_model=list[KnowledgeEntryResponse])
+async def get_company(
+    session: AsyncSession = Depends(get_session),
+):
+    """Return company profile (bedrijfsprofiel + propositie)."""
+    t0 = time.perf_counter()
+    query = (
+        select(KnowledgeEntry)
+        .where(
+            KnowledgeEntry.type.in_(["bedrijfsprofiel", "propositie"]),
+            KnowledgeEntry.is_active.is_(True),
+        )
+        .options(selectinload(KnowledgeEntry.chunks))
+    )
+    result = await session.execute(query)
+    entries = result.scalars().all()
+
+    ms = int((time.perf_counter() - t0) * 1000)
+    await log_query(session, "knowledge/company", "company profile", response_time_ms=ms)
+    await session.commit()
+    return [_entry_to_response(e) for e in entries]
+
+
+@router.get("/tone-of-voice", response_model=KnowledgeEntryResponse | None)
+async def get_tone_of_voice(
+    session: AsyncSession = Depends(get_session),
+):
+    """Return tone of voice guidelines."""
+    t0 = time.perf_counter()
+    query = (
+        select(KnowledgeEntry)
+        .where(KnowledgeEntry.type == "tone_of_voice", KnowledgeEntry.is_active.is_(True))
+        .options(selectinload(KnowledgeEntry.chunks))
+        .limit(1)
+    )
+    result = await session.execute(query)
+    entry = result.scalar_one_or_none()
+
+    ms = int((time.perf_counter() - t0) * 1000)
+    await log_query(session, "knowledge/tone-of-voice", "tone of voice", response_time_ms=ms)
+    await session.commit()
+
+    if entry is None:
+        raise HTTPException(status_code=404, detail="No tone of voice entry found")
+    return _entry_to_response(entry)
+
+
+@router.get("/services", response_model=list[KnowledgeEntryResponse])
+async def get_services(
+    segment: str | None = Query(None),
+    session: AsyncSession = Depends(get_session),
+):
+    """Return services, optionally filtered by segment keyword."""
+    t0 = time.perf_counter()
+    query = (
+        select(KnowledgeEntry)
+        .where(KnowledgeEntry.type == "dienst", KnowledgeEntry.is_active.is_(True))
+        .options(selectinload(KnowledgeEntry.chunks))
+    )
+    if segment:
+        query = query.where(KnowledgeEntry.content.ilike(f"%{segment}%"))
+    result = await session.execute(query)
+    entries = result.scalars().all()
+
+    ms = int((time.perf_counter() - t0) * 1000)
+    await log_query(session, "knowledge/services", f"segment={segment}", response_time_ms=ms)
+    await session.commit()
+    return [_entry_to_response(e) for e in entries]
+
+
+# ---------------------------------------------------------------------------
+# CRUD endpoints
+# ---------------------------------------------------------------------------
 
 
 @router.post("/entries", response_model=KnowledgeEntryResponse, status_code=status.HTTP_201_CREATED)
