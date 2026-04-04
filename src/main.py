@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.db.engine import engine
-from src.endpoints import brain, contacts, ingest, knowledge, registry_api, semantic, structured
+from src.endpoints import brain, contacts, ingest, knowledge, registry_api, scopes, semantic, structured
 from src.storage.minio_service import MinIOService
 
 logger = logging.getLogger(__name__)
@@ -36,6 +36,7 @@ app.include_router(brain.router, prefix="/api/v1/brain", tags=["brain"])
 app.include_router(contacts.router, prefix="/api/v1/contacts", tags=["contacts"])
 app.include_router(ingest.router, prefix="/api/v1/ingest", tags=["ingest"])
 app.include_router(registry_api.router, prefix="/api/v1/registry", tags=["registry"])
+app.include_router(scopes.router, prefix="/api/v1/scopes", tags=["scopes"])
 
 
 @app.get("/health")
