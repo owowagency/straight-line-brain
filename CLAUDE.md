@@ -40,4 +40,4 @@ docker compose exec api alembic upgrade head
 - `tests/` — Pytest test suite
 
 ## Current Phase
-Phase 2: Knowledge CRUD + Embeddings + Ingest
+Phase 3: Retrieval — Brein Bevragen
