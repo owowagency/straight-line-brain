@@ -8,11 +8,14 @@ from src.db.models import KnowledgeEntry
 from src.db.session import get_session
 from src.embeddings.service import EmbeddingService, get_embedding_service
 from src.query_planner.planner import QueryPlanner
+from src.schemas.lint import LintReport
 from src.schemas.retrieval import BrainQueryRequest, BrainQueryResponse
+from src.services.lint import LintService
 from src.services.query_logger import log_query
 
 router = APIRouter()
 planner = QueryPlanner()
+linter = LintService()
 
 
 @router.post("/query", response_model=BrainQueryResponse)
@@ -109,3 +112,11 @@ async def _file_answer(
     session.add(entry)
     await session.flush()
     return str(entry.id)
+
+
+@router.post("/lint", response_model=LintReport)
+async def lint_brain(
+    session: AsyncSession = Depends(get_session),
+):
+    """Health check: analyze the brein for gaps, orphans, stale content, and suggestions."""
+    return await linter.run_lint(session)
