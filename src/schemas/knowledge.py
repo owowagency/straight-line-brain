@@ -13,6 +13,8 @@ class KnowledgeType(str, Enum):
     werkwijze = "werkwijze"
     bedrijfsprofiel = "bedrijfsprofiel"
     brand = "brand"
+    synthese = "synthese"
+    inzicht = "inzicht"
     overig = "overig"
 
 

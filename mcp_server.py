@@ -424,6 +424,39 @@ async def get_embedding_map(kind: str = "all") -> str:
     return json.dumps(data, indent=2, ensure_ascii=False)
 
 
+# ===========================================================================
+# SYNTHESIS TOOLS
+# ===========================================================================
+
+
+@mcp.tool()
+async def get_related_entries(entry_id: str) -> str:
+    """Haal gerelateerde kennisitems op voor een specifiek item.
+    Cross-references worden automatisch gedetecteerd bij ingest.
+
+    Args:
+        entry_id: UUID van het kennisitem
+    """
+    data = await _get(f"/api/v1/knowledge/entries/{entry_id}/related")
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+@mcp.tool()
+async def query_brain_and_file(query: str, agent_id: str | None = None) -> str:
+    """Stel een vraag aan het brein EN sla het antwoord op als 'inzicht' in de kennisbank.
+    Gebruik dit als je een waardevol antwoord wilt bewaren voor later.
+
+    Args:
+        query: Vrije vraag in natuurlijke taal
+        agent_id: Optioneel agent ID
+    """
+    body = {"query": query, "file_answer": True}
+    if agent_id:
+        body["agent_id"] = agent_id
+    data = await _post("/api/v1/brain/query", body=body)
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
 if __name__ == "__main__":
     if "--remote" in sys.argv or os.getenv("MCP_TRANSPORT") == "streamable-http":
         # Remote mode: hosted MCP server via Streamable HTTP
