@@ -457,11 +457,23 @@ async def query_brain_and_file(query: str, agent_id: str | None = None) -> str:
     return json.dumps(data, indent=2, ensure_ascii=False)
 
 
+@mcp.tool()
+async def lint_brain() -> str:
+    """Health check van het Digitaal Brein. Analyseert:
+    - Welke kenniscategorieën ontbreken
+    - Entries zonder cross-references (orphans)
+    - Verouderde entries (90+ dagen niet bijgewerkt)
+    - Ontbrekende embeddings
+    - Dunne entries met weinig inhoud
+    - Ontbrekende contacten of analytics data
+
+    Retourneert een score (0-100), issues, en actiepunten."""
+    data = await _post("/api/v1/brain/lint")
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
 if __name__ == "__main__":
     if "--remote" in sys.argv or os.getenv("MCP_TRANSPORT") == "streamable-http":
-        # Remote mode: hosted MCP server via Streamable HTTP
-        # UPPR.OS agents connect to http://<host>:<port>/mcp
         mcp.run(transport="streamable-http")
     else:
-        # Local mode: stdio transport for Claude Code / Claude Desktop
         mcp.run()
