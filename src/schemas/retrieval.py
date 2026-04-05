@@ -73,6 +73,7 @@ class StructuredQueryResponse(BaseModel):
 class BrainQueryRequest(BaseModel):
     query: str
     agent_id: str | None = None
+    file_answer: bool = False
 
 
 class BrainQueryResponse(BaseModel):
@@ -80,3 +81,11 @@ class BrainQueryResponse(BaseModel):
     strategy: str
     results: list[SemanticChunkResult]
     planner_metadata: dict | None = None
+    filed_as: str | None = None  # entry ID if answer was filed
+
+
+class RelatedEntryInfo(BaseModel):
+    id: str
+    title: str
+    type: str
+    score: float

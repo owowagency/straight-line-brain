@@ -58,9 +58,11 @@ _STRATEGIES = {
     "tone_of_voice": _chunk_single,
     "bedrijfsprofiel": _chunk_single,
     "brand": _chunk_single,
+    "inzicht": _chunk_single,
     "dienst": _chunk_by_sections,
     "icp": _chunk_by_sections,
     "werkwijze": _chunk_by_sections,
+    "synthese": _chunk_by_sections,
 }
 
 

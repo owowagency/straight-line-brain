@@ -1,8 +1,10 @@
 import time
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.db.models import KnowledgeEntry
 from src.db.session import get_session
 from src.embeddings.service import EmbeddingService, get_embedding_service
 from src.query_planner.planner import QueryPlanner
@@ -50,6 +52,14 @@ async def query_brain(
         planner_result=planner_meta,
         response_time_ms=ms,
     )
+
+    # 3. File answer as knowledge entry if requested
+    filed_id = None
+    if body.file_answer and execution["results"]:
+        filed_id = await _file_answer(
+            session, embedder, body.query, execution, planner_meta
+        )
+
     await session.commit()
 
     return BrainQueryResponse(
@@ -57,4 +67,45 @@ async def query_brain(
         strategy=execution["strategy"],
         results=execution["results"],
         planner_metadata=planner_meta,
+        filed_as=filed_id,
     )
+
+
+async def _file_answer(
+    session: AsyncSession,
+    embedder: EmbeddingService,
+    query: str,
+    execution: dict,
+    planner_meta: dict,
+) -> str | None:
+    """File a brain query answer as a new 'inzicht' knowledge entry."""
+    results = execution["results"]
+    if not results:
+        return None
+
+    # Build answer content from results
+    lines = [f"# Inzicht: {query}", ""]
+    for r in results[:5]:
+        lines.append(f"**{r.entry_title}** ({r.entry_type})")
+        lines.append(r.content)
+        lines.append("")
+
+    content = "\n".join(lines)
+    embedding = await embedder.embed_text(f"{query}\n\n{content}")
+
+    entry = KnowledgeEntry(
+        type="inzicht",
+        title=f"Inzicht: {query[:100]}",
+        content=content,
+        created_by=planner_meta.get("agent_id", "brain_query"),
+        metadata_={
+            "source_query": query,
+            "strategy_used": execution["strategy"],
+            "filed_at": datetime.now(timezone.utc).isoformat(),
+            "auto_generated": True,
+        },
+        embedding=embedding,
+    )
+    session.add(entry)
+    await session.flush()
+    return str(entry.id)

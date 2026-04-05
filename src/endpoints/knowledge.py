@@ -1,7 +1,7 @@
 import time
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -17,10 +17,15 @@ from src.schemas.knowledge import (
     KnowledgeEntryResponse,
     KnowledgeEntryUpdate,
 )
+from src.schemas.retrieval import RelatedEntryInfo
 from src.services.query_logger import log_query
+from src.synthesis.generator import SynthesisGenerator
+from src.synthesis.relations import RelationDetector
 
 router = APIRouter()
 chunker = ChunkingService()
+relation_detector = RelationDetector()
+synthesis_generator = SynthesisGenerator()
 
 
 # ---------------------------------------------------------------------------
@@ -129,6 +134,7 @@ async def get_services(
 @router.post("/entries", response_model=KnowledgeEntryResponse, status_code=status.HTTP_201_CREATED)
 async def create_entry(
     body: KnowledgeEntryCreate,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_session),
     embedder: EmbeddingService = Depends(get_embedding_service),
 ):
@@ -170,6 +176,12 @@ async def create_entry(
 
     await session.commit()
     await session.refresh(entry, ["chunks"])
+
+    # Trigger synthesis in background (detect relations + generate synthese docs)
+    background_tasks.add_task(
+        _post_ingest_synthesis, entry.id, body.type.value
+    )
+
     return _entry_to_response(entry)
 
 
@@ -285,6 +297,49 @@ async def delete_entry(
     entry.is_active = False
     await session.commit()
     return StatusResponse(status="ok", message="Entry soft-deleted", id=entry.id)
+
+
+# ---------------------------------------------------------------------------
+# Related entries
+# ---------------------------------------------------------------------------
+
+
+@router.get("/entries/{entry_id}/related", response_model=list[RelatedEntryInfo])
+async def get_related_entries(
+    entry_id: UUID,
+    session: AsyncSession = Depends(get_session),
+):
+    """Get entries related to this entry (via auto-detected cross-references)."""
+    entry = await _get_entry_or_404(session, entry_id)
+    related = (entry.metadata_ or {}).get("related_entries", [])
+    return [RelatedEntryInfo(**r) for r in related]
+
+
+# ---------------------------------------------------------------------------
+# Background synthesis
+# ---------------------------------------------------------------------------
+
+
+async def _post_ingest_synthesis(entry_id: UUID, entry_type: str) -> None:
+    """Background task: detect relations and generate synthesis documents."""
+    from sqlalchemy.ext.asyncio import async_sessionmaker
+    from src.db.engine import engine
+
+    embedder = EmbeddingService.get_instance()
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+    async with session_factory() as session:
+        # 1. Detect and store relations
+        relations = await relation_detector.detect_related(session, entry_id)
+        if relations:
+            await relation_detector.update_entry_relations(session, entry_id, relations)
+
+        # 2. Generate synthesis documents if triggered
+        synthesis_types = synthesis_generator.should_generate(entry_type)
+        for syn_type in synthesis_types:
+            await synthesis_generator.generate(syn_type, session, embedder)
+
+        await session.commit()
 
 
 # ---------------------------------------------------------------------------
