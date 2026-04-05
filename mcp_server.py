@@ -399,6 +399,31 @@ async def detect_query_patterns(
     return json.dumps(data, indent=2, ensure_ascii=False)
 
 
+# ===========================================================================
+# DASHBOARD TOOLS
+# ===========================================================================
+
+
+@mcp.tool()
+async def get_brain_overview() -> str:
+    """Haal een overzicht op van alle kennis in het Digitaal Brein.
+    Toont entries gegroepeerd per type met counts en content previews."""
+    data = await _get("/api/v1/dashboard/overview")
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+@mcp.tool()
+async def get_embedding_map(kind: str = "all") -> str:
+    """Haal 2D embedding coördinaten op voor visualisatie van het brein.
+    Retourneert x,y punten die als scatter plot gerenderd kunnen worden.
+
+    Args:
+        kind: "entries" voor alleen entries, "chunks" voor chunks, "all" voor beide
+    """
+    data = await _get("/api/v1/dashboard/embeddings", params={"kind": kind})
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
 if __name__ == "__main__":
     if "--remote" in sys.argv or os.getenv("MCP_TRANSPORT") == "streamable-http":
         # Remote mode: hosted MCP server via Streamable HTTP
