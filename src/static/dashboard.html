@@ -141,6 +141,28 @@
     border-radius: 6px; padding: 6px 12px; font-size: 13px; cursor: pointer;
   }
 
+  /* Health score */
+  .health-section { margin-bottom: 28px; }
+  .health-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .health-score {
+    width: 64px; height: 64px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; border: 3px solid;
+  }
+  .health-score.good { border-color: var(--green); color: var(--green); }
+  .health-score.ok { border-color: var(--orange); color: var(--orange); }
+  .health-score.bad { border-color: var(--red); color: var(--red); }
+  .health-title { font-size: 16px; font-weight: 600; }
+  .health-sub { font-size: 13px; color: var(--text-dim); }
+  .health-issues { display: flex; flex-direction: column; gap: 8px; }
+  .issue {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px; border-radius: 8px; background: var(--surface2);
+    font-size: 13px; line-height: 1.5;
+  }
+  .issue-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+  .issue-action { color: var(--accent2); font-size: 12px; margin-top: 4px; }
+
   /* Loading / error */
   .loading { text-align: center; padding: 40px; color: var(--text-dim); }
   .error { text-align: center; padding: 40px; color: var(--red); }
@@ -187,6 +209,18 @@
       <div class="label">Kenniscategorieën</div>
       <div class="value" id="totalTypes">-</div>
     </div>
+  </div>
+
+  <!-- Health Check -->
+  <div class="section fade-in" id="healthSection" style="display:none">
+    <div class="health-header">
+      <div class="health-score" id="healthScore">-</div>
+      <div>
+        <div class="health-title">Brein Gezondheid</div>
+        <div class="health-sub" id="healthSub">Laden...</div>
+      </div>
+    </div>
+    <div class="health-issues" id="healthIssues"></div>
   </div>
 
   <!-- Kenniskaart -->
@@ -445,9 +479,45 @@ async function loadEmbeddings() {
   }
 }
 
+// ---- HEALTH CHECK ----
+async function loadHealth() {
+  try {
+    const res = await fetch('/api/v1/brain/lint', { method: 'POST' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    const section = document.getElementById('healthSection');
+    section.style.display = 'block';
+
+    const scoreEl = document.getElementById('healthScore');
+    scoreEl.textContent = data.score;
+    scoreEl.className = 'health-score ' + (data.score >= 75 ? 'good' : data.score >= 40 ? 'ok' : 'bad');
+
+    document.getElementById('healthSub').textContent =
+      `${data.total_issues} ${data.total_issues === 1 ? 'aandachtspunt' : 'aandachtspunten'} gevonden`;
+
+    const icons = { warning: '\u26a0\ufe0f', info: '\u2139\ufe0f', suggestion: '\ud83d\udca1' };
+    const issuesHtml = data.issues.slice(0, 8).map(issue => `
+      <div class="issue">
+        <span class="issue-icon">${icons[issue.severity] || '\u2139\ufe0f'}</span>
+        <div>
+          <div>${issue.message}</div>
+          ${issue.action ? `<div class="issue-action">${issue.action}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+    document.getElementById('healthIssues').innerHTML = issuesHtml ||
+      '<div class="issue"><span class="issue-icon">\u2705</span><div>Geen problemen gevonden!</div></div>';
+
+  } catch (err) {
+    console.error('Health check error:', err);
+  }
+}
+
 // Init
 loadOverview();
 loadEmbeddings();
+loadHealth();
 </script>
 </body>
 </html>
