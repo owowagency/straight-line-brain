@@ -163,15 +163,27 @@ def _reduce_to_2d(embeddings: list) -> list[tuple[float, float]]:
         n_neighbors = min(15, len(matrix) - 1)
         reducer = UMAP(n_components=2, n_neighbors=n_neighbors, random_state=42)
         coords = reducer.fit_transform(matrix)
-        return [(float(row[0]), float(row[1])) for row in coords]
-    except ImportError:
-        logger.warning("umap-learn not installed, falling back to PCA")
+    except (ImportError, Exception):
+        logger.info("Using sklearn PCA for dimensionality reduction")
+        try:
+            from sklearn.decomposition import PCA
 
-    # Fallback: PCA via numpy (no sklearn needed)
-    centered = matrix - matrix.mean(axis=0)
-    _, _, vt = np.linalg.svd(centered, full_matrices=False)
-    projected = centered @ vt[:2].T
-    return [(float(row[0]), float(row[1])) for row in projected]
+            reducer = PCA(n_components=2, whiten=True, random_state=42)
+            coords = reducer.fit_transform(matrix)
+        except ImportError:
+            # Last resort: numpy SVD
+            centered = matrix - matrix.mean(axis=0)
+            _, s, vt = np.linalg.svd(centered, full_matrices=False)
+            coords = centered @ vt[:2].T
+
+    # Normalize to [-1, 1] range for consistent chart rendering
+    for dim in range(2):
+        col = coords[:, dim]
+        rng = col.max() - col.min()
+        if rng > 0:
+            coords[:, dim] = 2 * (col - col.min()) / rng - 1
+
+    return [(float(row[0]), float(row[1])) for row in coords]
 
 
 def _entry_preview(entry: KnowledgeEntry) -> KnowledgeEntryPreview:

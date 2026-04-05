@@ -166,7 +166,8 @@
   <div class="search-section">
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Stel een vraag aan het brein..."
-             onkeydown="if(event.key==='Enter')doSearch()">
+             onkeydown="if(event.key==='Enter')doSearch()"
+             oninput="if(!this.value.trim())document.getElementById('searchResults').classList.remove('visible')">
       <button id="searchBtn" onclick="doSearch()">Zoeken</button>
     </div>
     <div class="search-results" id="searchResults"></div>
@@ -383,7 +384,7 @@ async function loadEmbeddings() {
         animation: { duration: 800, easing: 'easeOutQuart' },
         plugins: {
           datalabels: {
-            display: ctx => ctx.raw.kind === 'entry',
+            display: ctx => ctx.raw?.kind === 'entry',
             color: '#e4e6ef',
             font: { size: 11, weight: '500' },
             anchor: 'end',
@@ -404,9 +405,10 @@ async function loadEmbeddings() {
             titleFont: { size: 13 },
             bodyFont: { size: 12 },
             callbacks: {
-              title: ctx => ctx[0].raw.label,
+              title: ctx => ctx[0]?.raw?.label || '',
               label: ctx => {
                 const p = ctx.raw;
+                if (!p) return '';
                 const typeLabel = getLabel(p.type);
                 return `${typeLabel} · ${p.kind === 'entry' ? 'Hoofditem' : 'Fragment'}`;
               }
