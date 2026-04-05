@@ -1,7 +1,9 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 
 from src.db.engine import engine
 from src.endpoints import brain, contacts, dashboard, ingest, knowledge, registry_api, scopes, semantic, structured
@@ -43,3 +45,11 @@ app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["dashboar
 @app.get("/health")
 async def health():
     return {"status": "ok", "service": "uppr-digitaal-brein"}
+
+
+DASHBOARD_HTML = Path(__file__).parent / "static" / "dashboard.html"
+
+
+@app.get("/dashboard")
+async def dashboard_page():
+    return FileResponse(DASHBOARD_HTML, media_type="text/html")
