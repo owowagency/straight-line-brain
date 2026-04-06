@@ -152,7 +152,33 @@ class LintService:
                 action="Push sales data via /ingest/analytics.",
             ))
 
-        # 8. Synthesis check — are they up to date?
+        # 8. Conflict check — unresolved potential contradictions
+        conflict_count = 0
+        for e in entries:
+            conflicts = (e.metadata_ or {}).get("potential_conflicts", [])
+            unreviewed = [c for c in conflicts if c.get("status") == "unreviewed"]
+            if unreviewed:
+                conflict_count += len(unreviewed)
+                issues.append(LintIssue(
+                    severity="warning",
+                    category="conflict",
+                    message=f"'{e.title}' heeft {len(unreviewed)} ongeresolvede "
+                            f"potentiële tegenstrijdigheid(en).",
+                    entry_id=str(e.id),
+                    action="Review de conflicten en markeer als bevestigd of afgewezen.",
+                ))
+
+        # 9. Pending review check
+        pending_review = [e for e in entries if e.review_status == "pending_review"]
+        if pending_review:
+            issues.append(LintIssue(
+                severity="info",
+                category="review",
+                message=f"{len(pending_review)} entries wachten op review.",
+                action="Keur de entries goed of wijs ze af via /entries/{id}/approve.",
+            ))
+
+        # 10. Synthesis check — are they up to date?
         synthese_entries = by_type.get("synthese", [])
         if not synthese_entries and len(entries) > 5:
             issues.append(LintIssue(
@@ -191,6 +217,8 @@ class LintService:
                 if not (e.metadata_ or {}).get("related_entries")
                 and e.type not in ("synthese", "inzicht")
             ),
+            "unresolved_conflicts": conflict_count,
+            "pending_review": len(pending_review),
         }
 
         return LintReport(

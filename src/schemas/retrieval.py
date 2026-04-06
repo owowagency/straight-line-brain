@@ -89,3 +89,77 @@ class RelatedEntryInfo(BaseModel):
     title: str
     type: str
     score: float
+
+
+# ---------------------------------------------------------------------------
+# Brain Index
+# ---------------------------------------------------------------------------
+class BrainIndexEntry(BaseModel):
+    id: str
+    title: str
+    one_liner: str
+    related_count: int = 0
+    updated_at: datetime
+    created_by: str
+
+
+class BrainIndexCategory(BaseModel):
+    type: str
+    label: str
+    count: int
+    entries: list[BrainIndexEntry]
+
+
+class CrossReferenceEdge(BaseModel):
+    source: str  # entry id
+    target: str  # related entry id
+    score: float
+
+
+class BrainIndexResponse(BaseModel):
+    generated_at: datetime
+    total_entries: int
+    categories: list[BrainIndexCategory]
+    cross_reference_graph: list[CrossReferenceEdge]
+
+
+# ---------------------------------------------------------------------------
+# Knowledge Changelog
+# ---------------------------------------------------------------------------
+class ChangeLogEntry(BaseModel):
+    id: str
+    entry_id: str | None = None
+    action: str
+    entry_title: str
+    entry_type: str
+    change_summary: str
+    triggered_by: str
+    metadata: dict | None = None
+    created_at: datetime
+
+
+class ChangeLogResponse(BaseModel):
+    items: list[ChangeLogEntry]
+    total: int
+
+
+# ---------------------------------------------------------------------------
+# Wiki Export
+# ---------------------------------------------------------------------------
+class WikiExportResponse(BaseModel):
+    generated_at: datetime
+    total_files: int
+    files: dict[str, str]  # filename -> markdown content
+
+
+# ---------------------------------------------------------------------------
+# Potential Conflicts
+# ---------------------------------------------------------------------------
+class ConflictInfo(BaseModel):
+    entry_id: str
+    entry_title: str
+    conflicting_entry_id: str
+    conflicting_entry_title: str
+    similarity_score: float
+    reason: str
+    status: str = "unreviewed"  # unreviewed, confirmed, dismissed

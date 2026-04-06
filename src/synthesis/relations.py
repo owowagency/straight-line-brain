@@ -96,3 +96,51 @@ class RelationDetector:
             entry.title,
             len(relations),
         )
+
+    async def detect_conflicts(
+        self,
+        session: AsyncSession,
+        entry_id: UUID,
+        threshold: float = 0.85,
+    ) -> list[dict]:
+        """Detect potential contradictions: high-similarity entries from different sources."""
+        entry = await session.get(KnowledgeEntry, entry_id)
+        if entry is None:
+            return []
+
+        related = await self.detect_related(session, entry_id, top_k=10)
+        conflicts = []
+
+        for rel in related:
+            if rel["score"] < threshold:
+                continue
+            related_entry = await session.get(KnowledgeEntry, UUID(rel["id"]))
+            if related_entry is None:
+                continue
+
+            # Flag if: same type + different source, OR same type + significant time gap
+            same_type = related_entry.type == entry.type
+            different_source = related_entry.created_by != entry.created_by
+            if same_type and different_source:
+                conflicts.append({
+                    "entry_id": str(entry.id),
+                    "entry_title": entry.title,
+                    "conflicting_entry_id": str(related_entry.id),
+                    "conflicting_entry_title": related_entry.title,
+                    "similarity_score": rel["score"],
+                    "reason": f"Hoge similarity ({rel['score']:.2f}), andere bron "
+                              f"({entry.created_by} vs {related_entry.created_by})",
+                    "status": "unreviewed",
+                })
+
+        if conflicts:
+            # Store conflicts in entry metadata
+            metadata = dict(entry.metadata_) if entry.metadata_ else {}
+            metadata["potential_conflicts"] = conflicts
+            entry.metadata_ = metadata
+            logger.info(
+                "Detected %d potential conflicts for '%s'",
+                len(conflicts), entry.title,
+            )
+
+        return conflicts
