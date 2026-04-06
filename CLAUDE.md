@@ -23,7 +23,6 @@ docker compose exec api python -m scripts.seed_knowledge
 docker compose exec api python -m scripts.seed_analytics
 ```
 
-Dashboard: `http://localhost:8000/dashboard`
 API docs: `http://localhost:8000/docs`
 MCP server: `http://localhost:8001/mcp`
 
@@ -48,11 +47,10 @@ MCP server: `http://localhost:8001/mcp`
 - `src/middleware/` — API key auth + agent scope validation
 - `src/registry/` — Pattern detection + dynamic endpoint registry
 - `src/config.py` — pydantic-settings configuration
-- `src/static/dashboard.html` — Visual dashboard
 - `mcp_server.py` — MCP server (24 tools, stdio + remote HTTP)
 - `alembic/` — Database migrations
 - `scripts/` — Seed scripts and utilities
 - `tests/` — Pytest test suite
 
 ## Current Phase
-All 7 phases complete + Phase 8 (Synthesis) + Lint + Dashboard + MCP. Production-ready.
+All 7 phases complete + Phase 8 (Synthesis) + Lint + MCP. API-first (no embedded UI — agents build their own).

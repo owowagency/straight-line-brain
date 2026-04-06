@@ -9,7 +9,7 @@ from sqlalchemy.orm import selectinload
 
 from src.db.models import KnowledgeChunk, KnowledgeEntry
 from src.db.session import get_session
-from src.schemas.dashboard import (
+from src.schemas.stats import (
     EmbeddingPoint,
     EmbeddingVisualizationResponse,
     KnowledgeEntryPreview,

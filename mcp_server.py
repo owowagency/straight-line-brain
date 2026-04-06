@@ -400,7 +400,7 @@ async def detect_query_patterns(
 
 
 # ===========================================================================
-# DASHBOARD TOOLS
+# STATS TOOLS
 # ===========================================================================
 
 
@@ -408,7 +408,7 @@ async def detect_query_patterns(
 async def get_brain_overview() -> str:
     """Haal een overzicht op van alle kennis in het Digitaal Brein.
     Toont entries gegroepeerd per type met counts en content previews."""
-    data = await _get("/api/v1/dashboard/overview")
+    data = await _get("/api/v1/stats/overview")
     return json.dumps(data, indent=2, ensure_ascii=False)
 
 
@@ -420,7 +420,7 @@ async def get_embedding_map(kind: str = "all") -> str:
     Args:
         kind: "entries" voor alleen entries, "chunks" voor chunks, "all" voor beide
     """
-    data = await _get("/api/v1/dashboard/embeddings", params={"kind": kind})
+    data = await _get("/api/v1/stats/embeddings", params={"kind": kind})
     return json.dumps(data, indent=2, ensure_ascii=False)
 
 
