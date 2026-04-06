@@ -47,6 +47,9 @@ class KnowledgeEntry(Base):
     )
     created_by: Mapped[str] = mapped_column(String(128), server_default=text("'manual'"))
     is_active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
+    review_status: Mapped[str] = mapped_column(
+        String(32), server_default=text("'approved'")
+    )
 
     chunks: Mapped[list["KnowledgeChunk"]] = relationship(
         back_populates="entry", cascade="all, delete-orphan"
@@ -244,6 +247,31 @@ class AgentScope(Base):
         JSONB, nullable=True, server_default=text("'{}'::jsonb")
     )
     is_active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
+# ---------------------------------------------------------------------------
+# 10. KnowledgeChangeLog
+# ---------------------------------------------------------------------------
+class KnowledgeChangeLog(Base):
+    __tablename__ = "knowledge_changelog"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()")
+    )
+    entry_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("knowledge_entries.id"), nullable=True
+    )
+    action: Mapped[str] = mapped_column(String(32))
+    entry_title: Mapped[str] = mapped_column(String(512))
+    entry_type: Mapped[str] = mapped_column(String(64))
+    change_summary: Mapped[str] = mapped_column(Text)
+    triggered_by: Mapped[str] = mapped_column(String(128), server_default=text("'manual'"))
+    metadata_: Mapped[dict | None] = mapped_column(
+        "metadata", JSONB, nullable=True, server_default=text("'{}'::jsonb")
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

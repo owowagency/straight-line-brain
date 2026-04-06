@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.models import KnowledgeChunk, KnowledgeEntry
+from src.db.models import KnowledgeChangeLog, KnowledgeChunk, KnowledgeEntry
 from src.embeddings.chunking import ChunkingService
 from src.embeddings.service import EmbeddingService
 
@@ -199,6 +199,16 @@ class SynthesisGenerator:
             for chunk in list(existing.chunks):
                 await session.delete(chunk)
             await self._create_chunks(session, embedder, existing, content, metadata)
+            # Log changelog
+            session.add(KnowledgeChangeLog(
+                entry_id=existing.id,
+                action="synthesis_updated",
+                entry_title=title,
+                entry_type="synthese",
+                change_summary=f"Synthese '{synthesis_type}' bijgewerkt op basis van {len(source_entry_ids)} bronnen",
+                triggered_by="synthesis_generator",
+                metadata_={"synthesis_type": synthesis_type, "source_count": len(source_entry_ids)},
+            ))
             logger.info("Updated synthesis: %s", title)
             return existing
         else:
@@ -213,6 +223,16 @@ class SynthesisGenerator:
             session.add(entry)
             await session.flush()
             await self._create_chunks(session, embedder, entry, content, metadata)
+            # Log changelog
+            session.add(KnowledgeChangeLog(
+                entry_id=entry.id,
+                action="synthesis_created",
+                entry_title=title,
+                entry_type="synthese",
+                change_summary=f"Synthese '{synthesis_type}' gegenereerd op basis van {len(source_entry_ids)} bronnen",
+                triggered_by="synthesis_generator",
+                metadata_={"synthesis_type": synthesis_type, "source_count": len(source_entry_ids)},
+            ))
             logger.info("Created synthesis: %s", title)
             return entry
 

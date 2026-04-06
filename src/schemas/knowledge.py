@@ -24,6 +24,7 @@ class KnowledgeEntryCreate(BaseModel):
     content: str
     metadata: dict | None = None
     created_by: str = "manual"
+    review_required: bool = False
 
 
 class KnowledgeEntryUpdate(BaseModel):
@@ -54,6 +55,7 @@ class KnowledgeEntryResponse(BaseModel):
     updated_at: datetime
     created_by: str
     is_active: bool
+    review_status: str = "approved"
     chunks: list[KnowledgeChunkResponse] = []
 
 

@@ -40,6 +40,7 @@ async def search_semantic(
         )
         .join(KnowledgeEntry, KnowledgeChunk.entry_id == KnowledgeEntry.id)
         .where(KnowledgeEntry.is_active.is_(True))
+        .where(KnowledgeEntry.review_status == "approved")
         .where(KnowledgeChunk.embedding.is_not(None))
         .order_by(distance)
         .limit(body.top_k)

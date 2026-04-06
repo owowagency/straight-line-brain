@@ -18,6 +18,7 @@ from src.schemas.knowledge import (
     KnowledgeEntryUpdate,
 )
 from src.schemas.retrieval import RelatedEntryInfo
+from src.services.changelog import log_change
 from src.services.query_logger import log_query
 from src.synthesis.generator import SynthesisGenerator
 from src.synthesis.relations import RelationDetector
@@ -144,6 +145,7 @@ async def create_entry(
         title=body.title,
         content=body.content,
         created_by=body.created_by,
+        review_status="pending_review" if body.review_required else "approved",
     )
     if body.metadata is not None:
         entry.metadata_ = body.metadata
@@ -174,13 +176,25 @@ async def create_entry(
             )
             session.add(chunk)
 
+    # Log to changelog
+    await log_change(
+        session,
+        entry_id=entry.id,
+        action="created",
+        entry_title=body.title,
+        entry_type=body.type.value,
+        change_summary=f"Nieuwe entry aangemaakt ({len(body.content.split())} woorden)",
+        triggered_by=body.created_by,
+    )
+
     await session.commit()
     await session.refresh(entry, ["chunks"])
 
-    # Trigger synthesis in background (detect relations + generate synthese docs)
-    background_tasks.add_task(
-        _post_ingest_synthesis, entry.id, body.type.value
-    )
+    # Trigger synthesis in background only for approved entries
+    if entry.review_status == "approved":
+        background_tasks.add_task(
+            _post_ingest_synthesis, entry.id, body.type.value
+        )
 
     return _entry_to_response(entry)
 
@@ -283,6 +297,19 @@ async def update_entry(
                 )
                 session.add(chunk)
 
+    # Log to changelog
+    changed_fields = list(update_data.keys())
+    await log_change(
+        session,
+        entry_id=entry.id,
+        action="updated",
+        entry_title=entry.title,
+        entry_type=entry.type,
+        change_summary=f"Velden bijgewerkt: {', '.join(changed_fields)}",
+        triggered_by="manual",
+        metadata={"changed_fields": changed_fields},
+    )
+
     await session.commit()
     await session.refresh(entry, ["chunks"])
     return _entry_to_response(entry)
@@ -295,8 +322,80 @@ async def delete_entry(
 ):
     entry = await _get_entry_or_404(session, entry_id)
     entry.is_active = False
+
+    await log_change(
+        session,
+        entry_id=entry.id,
+        action="deleted",
+        entry_title=entry.title,
+        entry_type=entry.type,
+        change_summary="Entry soft-deleted",
+        triggered_by="manual",
+    )
+
     await session.commit()
     return StatusResponse(status="ok", message="Entry soft-deleted", id=entry.id)
+
+
+# ---------------------------------------------------------------------------
+# Review / Approve
+# ---------------------------------------------------------------------------
+
+
+@router.post("/entries/{entry_id}/approve", response_model=StatusResponse)
+async def approve_entry(
+    entry_id: UUID,
+    background_tasks: BackgroundTasks,
+    session: AsyncSession = Depends(get_session),
+):
+    """Approve a pending_review entry. Makes it searchable and triggers synthesis."""
+    entry = await _get_entry_or_404(session, entry_id)
+    if entry.review_status == "approved":
+        return StatusResponse(status="ok", message="Entry is al goedgekeurd", id=entry.id)
+
+    entry.review_status = "approved"
+
+    await log_change(
+        session,
+        entry_id=entry.id,
+        action="approved",
+        entry_title=entry.title,
+        entry_type=entry.type,
+        change_summary="Entry goedgekeurd na review",
+        triggered_by="manual",
+    )
+
+    await session.commit()
+
+    # Now trigger synthesis that was skipped during creation
+    background_tasks.add_task(
+        _post_ingest_synthesis, entry.id, entry.type
+    )
+
+    return StatusResponse(status="ok", message="Entry goedgekeurd", id=entry.id)
+
+
+@router.post("/entries/{entry_id}/reject", response_model=StatusResponse)
+async def reject_entry(
+    entry_id: UUID,
+    session: AsyncSession = Depends(get_session),
+):
+    """Reject a pending_review entry."""
+    entry = await _get_entry_or_404(session, entry_id)
+    entry.review_status = "rejected"
+
+    await log_change(
+        session,
+        entry_id=entry.id,
+        action="rejected",
+        entry_title=entry.title,
+        entry_type=entry.type,
+        change_summary="Entry afgewezen na review",
+        triggered_by="manual",
+    )
+
+    await session.commit()
+    return StatusResponse(status="ok", message="Entry afgewezen", id=entry.id)
 
 
 # ---------------------------------------------------------------------------
@@ -321,7 +420,7 @@ async def get_related_entries(
 
 
 async def _post_ingest_synthesis(entry_id: UUID, entry_type: str) -> None:
-    """Background task: detect relations and generate synthesis documents."""
+    """Background task: detect relations, conflicts, and generate synthesis documents."""
     from sqlalchemy.ext.asyncio import async_sessionmaker
     from src.db.engine import engine
 
@@ -334,7 +433,10 @@ async def _post_ingest_synthesis(entry_id: UUID, entry_type: str) -> None:
         if relations:
             await relation_detector.update_entry_relations(session, entry_id, relations)
 
-        # 2. Generate synthesis documents if triggered
+        # 2. Detect potential contradictions
+        await relation_detector.detect_conflicts(session, entry_id)
+
+        # 3. Generate synthesis documents if triggered
         synthesis_types = synthesis_generator.should_generate(entry_type)
         for syn_type in synthesis_types:
             await synthesis_generator.generate(syn_type, session, embedder)
@@ -370,6 +472,7 @@ def _entry_to_response(entry: KnowledgeEntry) -> KnowledgeEntryResponse:
         updated_at=entry.updated_at,
         created_by=entry.created_by,
         is_active=entry.is_active,
+        review_status=entry.review_status,
         chunks=[
             {
                 "id": c.id,

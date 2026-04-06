@@ -466,9 +466,146 @@ async def lint_brain() -> str:
     - Ontbrekende embeddings
     - Dunne entries met weinig inhoud
     - Ontbrekende contacten of analytics data
+    - Ongeresolvede tegenstrijdigheden
+    - Entries die wachten op review
 
     Retourneert een score (0-100), issues, en actiepunten."""
     data = await _post("/api/v1/brain/lint")
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+# ===========================================================================
+# BRAIN INDEX & NAVIGATION TOOLS
+# ===========================================================================
+
+
+@mcp.tool()
+async def get_brain_index() -> str:
+    """Inhoudelijke index van het brein: catalogus van alle entries met one-liners,
+    gecategoriseerd per type, inclusief cross-reference graph.
+
+    Gebruik dit als eerste stap om het brein te navigeren: scan de index,
+    bepaal welke entries relevant zijn, en haal dan specifieke entries op.
+
+    Retourneert: categorieën met entries (id, titel, one-liner, related_count)
+    plus een cross-reference graph."""
+    data = await _get("/api/v1/brain/index")
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+# ===========================================================================
+# CHANGELOG TOOLS
+# ===========================================================================
+
+
+@mcp.tool()
+async def get_brain_changelog(
+    since: str | None = None,
+    entry_type: str | None = None,
+    limit: int = 50,
+) -> str:
+    """Chronologisch overzicht van alle kenniswijzigingen in het brein.
+
+    Toont: wanneer entries zijn aangemaakt, bijgewerkt, verwijderd, of
+    wanneer synthese-documenten zijn gegenereerd/bijgewerkt.
+
+    Args:
+        since: ISO datum filter, bijv. '2026-03-01'
+        entry_type: Filter op type, bijv. 'icp', 'dienst'
+        limit: Max aantal resultaten (default 50)
+    """
+    params = {"limit": limit}
+    if since:
+        params["since"] = since
+    if entry_type:
+        params["entry_type"] = entry_type
+    data = await _get("/api/v1/brain/changelog", params=params)
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+# ===========================================================================
+# WIKI EXPORT TOOLS
+# ===========================================================================
+
+
+@mcp.tool()
+async def export_wiki() -> str:
+    """Exporteer het volledige brein als een set gelinkte markdown-bestanden.
+
+    Genereert:
+    - index.md: inhoudelijke catalogus met links naar alle entries
+    - changelog.md: chronologisch overzicht van wijzigingen
+    - Per entry: {type}/{slug}.md met content en [[related]] links
+
+    Retourneert een JSON dict met filename → markdown content."""
+    data = await _post("/api/v1/brain/wiki-export")
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+# ===========================================================================
+# CONFLICT DETECTION TOOLS
+# ===========================================================================
+
+
+@mcp.tool()
+async def get_potential_conflicts(status: str | None = None) -> str:
+    """Toon potentiële tegenstrijdigheden in de kennisbank.
+
+    Detecteert entries met hoge similarity maar verschillende bronnen.
+    Dit kunnen entries zijn die elkaar tegenspreken.
+
+    Args:
+        status: Filter op status: 'unreviewed', 'confirmed', 'dismissed'
+    """
+    params = {}
+    if status:
+        params["status"] = status
+    data = await _get("/api/v1/brain/conflicts", params=params)
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+# ===========================================================================
+# REVIEW TOOLS
+# ===========================================================================
+
+
+@mcp.tool()
+async def list_pending_reviews() -> str:
+    """Toon entries die wachten op review voordat ze doorzoekbaar worden.
+
+    Entries met review_required=true bij aanmaak zijn niet doorzoekbaar
+    totdat ze goedgekeurd zijn."""
+    data = await _get("/api/v1/knowledge/entries", params={
+        "is_active": "true",
+        "page_size": 100,
+    })
+    # Filter client-side for pending_review
+    items = data.get("items", [])
+    pending = [i for i in items if i.get("review_status") == "pending_review"]
+    return json.dumps(pending, indent=2, ensure_ascii=False)
+
+
+@mcp.tool()
+async def approve_entry(entry_id: str) -> str:
+    """Keur een entry goed die wacht op review.
+
+    Na goedkeuring wordt de entry doorzoekbaar en wordt synthese getriggerd.
+
+    Args:
+        entry_id: UUID van de entry om goed te keuren
+    """
+    data = await _post(f"/api/v1/knowledge/entries/{entry_id}/approve")
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+@mcp.tool()
+async def reject_entry(entry_id: str) -> str:
+    """Wijs een entry af die wacht op review.
+
+    Args:
+        entry_id: UUID van de entry om af te wijzen
+    """
+    data = await _post(f"/api/v1/knowledge/entries/{entry_id}/reject")
     return json.dumps(data, indent=2, ensure_ascii=False)
 
 
