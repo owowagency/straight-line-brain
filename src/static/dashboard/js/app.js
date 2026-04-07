@@ -66,6 +66,8 @@ function switchView(viewName) {
 
   if (viewName === 'live') {
     loadLiveData();
+  } else if (viewName === 'wiki') {
+    loadWikiData();
   }
 }
 
@@ -74,7 +76,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 // Init from hash
-const initView = location.hash === '#live' ? 'live' : 'framework';
+const hashMap = { '#live': 'live', '#wiki': 'wiki' };
+const initView = hashMap[location.hash] || 'framework';
 switchView(initView);
 
 // Refresh button

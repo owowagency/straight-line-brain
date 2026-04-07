@@ -32,6 +32,7 @@ async function loadLiveData() {
     renderCoverage(lint);
     renderIssues(lint);
     renderChangelog(changelog);
+    initChangelogFilters();
     renderCrossRefGraph(index);
 
     // Embeddings loaded separately (can be slow)
