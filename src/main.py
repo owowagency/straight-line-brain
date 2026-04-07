@@ -1,7 +1,9 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from src.db.engine import engine
 from src.endpoints import brain, contacts, ingest, knowledge, registry_api, scopes, semantic, stats, structured
@@ -38,6 +40,11 @@ app.include_router(ingest.router, prefix="/api/v1/ingest", tags=["ingest"])
 app.include_router(registry_api.router, prefix="/api/v1/registry", tags=["registry"])
 app.include_router(scopes.router, prefix="/api/v1/scopes", tags=["scopes"])
 app.include_router(stats.router, prefix="/api/v1/stats", tags=["stats"])
+
+
+static_dir = Path(__file__).parent / "static"
+if static_dir.exists():
+    app.mount("/dashboard", StaticFiles(directory=str(static_dir / "dashboard"), html=True), name="dashboard")
 
 
 @app.get("/health")

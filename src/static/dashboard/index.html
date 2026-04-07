@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digitaal Brein — Dashboard</title>
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <div class="nav-brand">
+      <svg class="brain-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2C9 2 6.5 4 6 7c-2 .5-4 2.5-4 5s2 4.5 4 5c.5 3 3 5 6 5s5.5-2 6-5c2-.5 4-2.5 4-5s-2-4.5-4-5c-.5-3-3-5-6-5z"/>
+        <path d="M12 2v20M6 7c2 1 4 1 6 0M6 17c2-1 4-1 6 0M18 7c-2 1-4 1-6 0M18 17c-2-1-4-1-6 0M2 12h20" opacity="0.5"/>
+      </svg>
+      <span>Digitaal Brein</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" data-view="framework">Framework</button>
+      <button class="tab-btn" data-view="live">Jouw Brein</button>
+    </div>
+    <div class="nav-actions">
+      <input type="text" id="api-key-input" class="api-key-input" placeholder="API Key (optioneel)">
+    </div>
+  </nav>
+
+  <!-- Framework View -->
+  <main id="framework-view" class="view">
+    <section class="hero">
+      <h1>Digitaal Brein</h1>
+      <p class="subtitle">Modulaire kennislaag voor AI agents — semantisch zoeken, intelligente routering en automatische synthese in een enkel systeem.</p>
+    </section>
+
+    <!-- Processing Pipeline -->
+    <section class="section">
+      <h2 class="section-title">Verwerkingspipeline</h2>
+      <div class="pipeline" id="pipeline">
+        <div class="pipeline-step" data-step="1">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <h3>Ingestie</h3>
+          <p>Documenten, analytics en bestanden worden opgenomen via API of MCP</p>
+        </div>
+        <div class="pipeline-arrow"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div class="pipeline-step" data-step="2">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <h3>Chunking</h3>
+          <p>Content wordt opgesplitst met type-specifieke strategieen</p>
+        </div>
+        <div class="pipeline-arrow"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div class="pipeline-step" data-step="3">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M9.5 10.5L5.5 7.5M14.5 10.5l4-3M9.5 13.5l-4 3M14.5 13.5l4 3" opacity="0.5"/></svg>
+          </div>
+          <h3>Embedding</h3>
+          <p>BGE-M3 genereert 1024-dimensionale vectoren voor semantisch begrip</p>
+        </div>
+        <div class="pipeline-arrow"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div class="pipeline-step" data-step="4">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7V4a1 1 0 011-1h14a1 1 0 011 1v3M4 7h16M4 7v13a1 1 0 001 1h14a1 1 0 001-1V7"/><path d="M8 11h8M8 15h5" opacity="0.5"/></svg>
+          </div>
+          <h3>Opslag</h3>
+          <p>PostgreSQL + pgvector voor gecombineerde structured en semantic search</p>
+        </div>
+        <div class="pipeline-arrow"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div class="pipeline-step" data-step="5">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3L2 9l10 6 10-6-10-6z"/><path d="M2 17l10 6 10-6M2 13l10 6 10-6" opacity="0.5"/></svg>
+          </div>
+          <h3>Synthese</h3>
+          <p>Automatische cross-referenties, conflictdetectie en synthese-documenten</p>
+        </div>
+        <div class="pipeline-arrow"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div class="pipeline-step" data-step="6">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6M11 8v6" opacity="0.5"/></svg>
+          </div>
+          <h3>Query</h3>
+          <p>Intelligente routering via Query Planner naar de juiste databron</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Knowledge Types -->
+    <section class="section">
+      <h2 class="section-title">Kennistypen</h2>
+      <p class="section-desc">10 gespecialiseerde categorieeen vormen de basis van elk digitaal brein</p>
+      <div class="types-grid" id="types-grid"></div>
+    </section>
+
+    <!-- Architecture Layers -->
+    <section class="section">
+      <h2 class="section-title">Architectuurlagen</h2>
+      <div class="arch-layers">
+        <div class="arch-layer layer-intelligence">
+          <div class="layer-label">Intelligentie</div>
+          <div class="layer-items">
+            <span class="layer-chip">Query Planner</span>
+            <span class="layer-chip">Semantic Search</span>
+            <span class="layer-chip">Cross-referenties</span>
+            <span class="layer-chip">Conflict Detectie</span>
+            <span class="layer-chip">Brain Lint</span>
+          </div>
+        </div>
+        <div class="arch-layer layer-processing">
+          <div class="layer-label">Verwerking</div>
+          <div class="layer-items">
+            <span class="layer-chip">BGE-M3 Embeddings</span>
+            <span class="layer-chip">Type-specifiek Chunking</span>
+            <span class="layer-chip">Auto-Synthese</span>
+            <span class="layer-chip">Pattern Detection</span>
+          </div>
+        </div>
+        <div class="arch-layer layer-storage">
+          <div class="layer-label">Opslag</div>
+          <div class="layer-items">
+            <span class="layer-chip">PostgreSQL + pgvector</span>
+            <span class="layer-chip">MinIO (S3)</span>
+            <span class="layer-chip">Redis Cache</span>
+          </div>
+        </div>
+        <div class="arch-layer layer-data">
+          <div class="layer-label">Data</div>
+          <div class="layer-items">
+            <span class="layer-chip">10 Kennistypen</span>
+            <span class="layer-chip">Contacten</span>
+            <span class="layer-chip">Analytics</span>
+            <span class="layer-chip">Bestanden</span>
+            <span class="layer-chip">Audit Trail</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integration Points -->
+    <section class="section">
+      <h2 class="section-title">Integratie</h2>
+      <div class="integration-grid">
+        <div class="integration-card">
+          <div class="integration-number">24</div>
+          <div class="integration-label">MCP Tools</div>
+          <p>Model Context Protocol server voor directe agent-integratie</p>
+        </div>
+        <div class="integration-card">
+          <div class="integration-number">9</div>
+          <div class="integration-label">API Modules</div>
+          <p>REST API met OpenAPI spec, agent scopes en query logging</p>
+        </div>
+        <div class="integration-card">
+          <div class="integration-number">10</div>
+          <div class="integration-label">Database Tabellen</div>
+          <p>PostgreSQL met pgvector, JSONB metadata en audit trail</p>
+        </div>
+        <div class="integration-card">
+          <div class="integration-number">5</div>
+          <div class="integration-label">Services</div>
+          <p>Docker Compose stack: API, MCP, PostgreSQL, Redis, MinIO</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Live Brain View -->
+  <main id="live-view" class="view" hidden>
+    <div class="live-header">
+      <h1>Jouw Digitaal Brein</h1>
+      <button class="refresh-btn" id="refresh-btn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Ververs
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="live-loading" class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <p>Brein laden...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="live-error" class="error-banner" hidden>
+      <p id="error-message">Kon geen verbinding maken met de API.</p>
+      <button class="retry-btn" id="retry-btn">Opnieuw proberen</button>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid" id="dashboard-grid">
+      <!-- Row 1: Health + Stats -->
+      <div class="panel" id="panel-health">
+        <h3 class="panel-title">Brain Health</h3>
+        <div class="gauge-container">
+          <canvas id="health-gauge"></canvas>
+          <div class="gauge-score" id="gauge-score">--</div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-stats">
+        <h3 class="panel-title">Overzicht</h3>
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-entries">--</div>
+            <div class="stat-label">Entries</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-chunks">--</div>
+            <div class="stat-label">Chunks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-types">--</div>
+            <div class="stat-label">Typen actief</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-issues">--</div>
+            <div class="stat-label">Issues</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Knowledge Types Bar Chart -->
+      <div class="panel panel-full" id="panel-types">
+        <h3 class="panel-title">Kennisbank per Type</h3>
+        <div class="chart-container">
+          <canvas id="types-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Row 3: Embedding Map -->
+      <div class="panel panel-full" id="panel-embeddings">
+        <h3 class="panel-title">
+          Embedding Map
+          <select id="embedding-kind" class="kind-select">
+            <option value="entries">Entries</option>
+            <option value="chunks">Chunks</option>
+            <option value="all">Alles</option>
+          </select>
+        </h3>
+        <div class="embedding-container" id="embedding-container"></div>
+      </div>
+
+      <!-- Row 4: Cross-Reference Graph -->
+      <div class="panel panel-full" id="panel-graph">
+        <h3 class="panel-title">Cross-referenties</h3>
+        <div class="graph-container" id="graph-container"></div>
+      </div>
+
+      <!-- Row 5: Coverage + Issues -->
+      <div class="panel" id="panel-coverage">
+        <h3 class="panel-title">Dekking</h3>
+        <div class="coverage-grid" id="coverage-grid"></div>
+      </div>
+
+      <div class="panel" id="panel-issues">
+        <h3 class="panel-title">Aandachtspunten</h3>
+        <div class="issues-list" id="issues-list"></div>
+      </div>
+
+      <!-- Row 6: Changelog -->
+      <div class="panel panel-full" id="panel-changelog">
+        <h3 class="panel-title">Recente Wijzigingen</h3>
+        <div class="changelog-timeline" id="changelog-timeline"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/framework.js"></script>
+  <script src="js/live.js"></script>
+  <script src="js/charts/health-gauge.js"></script>
+  <script src="js/charts/type-bars.js"></script>
+  <script src="js/charts/embedding-map.js"></script>
+  <script src="js/charts/cross-ref-graph.js"></script>
+  <script src="js/charts/changelog.js"></script>
+</body>
+</html>
