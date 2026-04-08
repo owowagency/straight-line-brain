@@ -161,8 +161,13 @@ class QueryPlanner:
         embedder: EmbeddingService,
         top_k: int = 5,
     ) -> list[SemanticChunkResult]:
-        """Vector similarity search on knowledge chunks."""
-        query_embedding = await embedder.embed_text(query)
+        """Vector similarity search with instruction-aware embedding,
+        entry deduplication, and score threshold."""
+        _MIN_SCORE = 0.3
+        _OVERFETCH = 3
+
+        # Use instruction-aware query embedding for better retrieval
+        query_embedding = await embedder.embed_query(query)
         distance = KnowledgeChunk.embedding.cosine_distance(query_embedding)
 
         q = (
@@ -176,23 +181,37 @@ class QueryPlanner:
             .where(KnowledgeEntry.is_active.is_(True))
             .where(KnowledgeChunk.embedding.is_not(None))
             .order_by(distance)
-            .limit(top_k)
+            .limit(top_k * _OVERFETCH)
         )
         result = await session.execute(q)
         rows = result.all()
 
-        return [
-            SemanticChunkResult(
-                chunk_id=row.KnowledgeChunk.id,
-                entry_id=row.KnowledgeChunk.entry_id,
-                entry_title=row.entry_title,
-                entry_type=row.entry_type,
-                content=row.KnowledgeChunk.content,
-                score=round(1.0 - row.distance, 4),
-                metadata=row.KnowledgeChunk.metadata_,
+        # Deduplicate: keep only the best chunk per entry, drop noise
+        seen_entries: set[str] = set()
+        results: list[SemanticChunkResult] = []
+        for row in rows:
+            score = round(1.0 - row.distance, 4)
+            if score < _MIN_SCORE:
+                continue
+            entry_id_str = str(row.KnowledgeChunk.entry_id)
+            if entry_id_str in seen_entries:
+                continue
+            seen_entries.add(entry_id_str)
+            results.append(
+                SemanticChunkResult(
+                    chunk_id=row.KnowledgeChunk.id,
+                    entry_id=row.KnowledgeChunk.entry_id,
+                    entry_title=row.entry_title,
+                    entry_type=row.entry_type,
+                    content=row.KnowledgeChunk.content,
+                    score=score,
+                    metadata=row.KnowledgeChunk.metadata_,
+                )
             )
-            for row in rows
-        ]
+            if len(results) >= top_k:
+                break
+
+        return results
 
     async def _execute_structured(
         self, query: str, session: AsyncSession

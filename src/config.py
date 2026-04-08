@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     log_level: str = "debug"
 
     # Embeddings
-    embedding_model: str = "BAAI/bge-m3"
+    embedding_model: str = "microsoft/harrier-oss-v1-0.6b"
     embedding_dimension: int = 1024
 
     # API Security

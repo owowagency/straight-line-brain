@@ -9,7 +9,7 @@ Modular knowledge layer for AI agents — bestaande uit een FastAPI MCP-server, 
 - **Migrations**: Alembic
 - **Object Store**: MinIO (S3-compatible)
 - **Cache**: Redis
-- **Embeddings**: sentence-transformers (BAAI/bge-m3, 1024 dim)
+- **Embeddings**: sentence-transformers (microsoft/harrier-oss-v1-0.6b, 1024 dim)
 - **MCP**: Model Context Protocol server (stdio + remote HTTP)
 - **Containers**: Docker Compose
 
