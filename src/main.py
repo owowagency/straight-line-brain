@@ -2,7 +2,9 @@ import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.db.engine import engine
@@ -30,6 +32,16 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    body = await request.body()
+    logger.error(
+        "Validation error on %s %s: %s | Body: %s",
+        request.method, request.url.path, exc.errors(), body.decode(errors="replace")[:2000],
+    )
+    return JSONResponse(status_code=422, content={"detail": exc.errors()})
+
 
 app.include_router(knowledge.router, prefix="/api/v1/knowledge", tags=["knowledge"])
 app.include_router(structured.router, prefix="/api/v1/structured", tags=["structured"])
