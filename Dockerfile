@@ -12,7 +12,7 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 
 # Pre-load embedding model into the image so first request is instant
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-m3')"
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-large-instruct')"
 
 COPY alembic.ini .
 COPY alembic/ ./alembic/

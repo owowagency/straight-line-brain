@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     log_level: str = "debug"
 
     # Embeddings
-    embedding_model: str = "BAAI/bge-m3"
+    embedding_model: str = "intfloat/multilingual-e5-large-instruct"
     embedding_dimension: int = 1024
 
     # API Security
