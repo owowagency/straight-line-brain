@@ -221,8 +221,8 @@ async def ingest_summarize(
 
     if not records:
         raise HTTPException(
-            status_code=404,
-            detail=f"No analytics data found for source='{body.source}' in period {body.period_start} to {body.period_end}",
+            status_code=422,
+            detail=f"Geen analytische data gevonden voor source='{body.source}' in periode {body.period_start} tot {body.period_end}. Voer eerst data in via /api/v1/ingest/analytics.",
         )
 
     # Aggregate by metric_type

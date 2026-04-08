@@ -1,5 +1,4 @@
 from datetime import date, datetime
-from decimal import Decimal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -9,7 +8,7 @@ class AnalyticsRecordCreate(BaseModel):
     source: str
     metric_type: str
     dimensions: dict | None = None
-    value: Decimal
+    value: float
     period_start: date
     period_end: date
     raw_data: dict | None = None

@@ -273,7 +273,7 @@ async def update_entry(
 
         # Delete old chunks
         for chunk in list(entry.chunks):
-            await session.delete(chunk)
+            session.delete(chunk)
 
         # Create new chunks
         entry_type = update_data.get("type", entry.type)
