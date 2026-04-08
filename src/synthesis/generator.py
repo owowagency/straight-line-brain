@@ -197,7 +197,7 @@ class SynthesisGenerator:
             existing.embedding = await embedder.embed_text(f"{title}\n\n{content}")
             # Re-chunk
             for chunk in list(existing.chunks):
-                await session.delete(chunk)
+                session.delete(chunk)
             await self._create_chunks(session, embedder, existing, content, metadata)
             # Log changelog
             session.add(KnowledgeChangeLog(
