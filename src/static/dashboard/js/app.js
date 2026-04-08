@@ -14,16 +14,16 @@ const TYPE_LABELS = {
 };
 
 const TYPE_COLORS = {
-  bedrijfsprofiel: '#6366f1',
-  propositie: '#3b82f6',
-  icp: '#14b8a6',
-  dienst: '#22c55e',
-  tone_of_voice: '#f59e0b',
-  werkwijze: '#f97316',
-  brand: '#ec4899',
-  synthese: '#a855f7',
-  inzicht: '#06b6d4',
-  overig: '#64748b',
+  bedrijfsprofiel: '#00DCFF',
+  propositie: '#3B9EFF',
+  icp: '#00B4CC',
+  dienst: '#5E8FFF',
+  tone_of_voice: '#7B8FFF',
+  werkwijze: '#009DB8',
+  brand: '#4ECFFF',
+  synthese: '#2A5AFF',
+  inzicht: '#33E5FF',
+  overig: '#6B7F99',
 };
 
 /* === API Client === */
