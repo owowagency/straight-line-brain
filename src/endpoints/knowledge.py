@@ -1,4 +1,3 @@
-import logging
 import time
 from uuid import UUID
 
@@ -23,8 +22,6 @@ from src.services.changelog import log_change
 from src.services.query_logger import log_query
 from src.synthesis.generator import SynthesisGenerator
 from src.synthesis.relations import RelationDetector
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter()
 chunker = ChunkingService()
@@ -191,7 +188,7 @@ async def create_entry(
     )
 
     await session.commit()
-    await session.refresh(entry, ["chunks"])
+    entry = await _get_entry_or_404(session, entry.id)
 
     # Trigger synthesis in background only for approved entries
     if entry.review_status == "approved":
@@ -256,72 +253,66 @@ async def update_entry(
     session: AsyncSession = Depends(get_session),
     embedder: EmbeddingService = Depends(get_embedding_service),
 ):
-    try:
-        entry = await _get_entry_or_404(session, entry_id)
+    entry = await _get_entry_or_404(session, entry_id)
 
-        update_data = body.model_dump(exclude_unset=True)
-        content_changed = "content" in update_data
+    update_data = body.model_dump(exclude_unset=True)
+    content_changed = "content" in update_data
 
-        for field, value in update_data.items():
-            if field == "metadata":
-                entry.metadata_ = value
-            elif field == "type":
-                setattr(entry, field, value.value if hasattr(value, "value") else value)
-            else:
-                setattr(entry, field, value)
+    for field, value in update_data.items():
+        if field == "metadata":
+            entry.metadata_ = value
+        elif field == "type":
+            setattr(entry, field, value.value if hasattr(value, "value") else value)
+        else:
+            setattr(entry, field, value)
 
-        # Re-embed and re-chunk if content changed
-        if content_changed:
-            entry_embedding = await embedder.embed_text(f"{entry.title}\n\n{entry.content}")
-            entry.embedding = entry_embedding
+    # Re-embed and re-chunk if content changed
+    if content_changed:
+        entry_embedding = await embedder.embed_text(f"{entry.title}\n\n{entry.content}")
+        entry.embedding = entry_embedding
 
-            # Delete old chunks
-            for chunk in list(entry.chunks):
-                await session.delete(chunk)
+        # Delete old chunks
+        for chunk in list(entry.chunks):
+            await session.delete(chunk)
 
-            # Create new chunks
-            entry_type = update_data.get("type", entry.type)
-            if hasattr(entry_type, "value"):
-                entry_type = entry_type.value
-            chunk_data = chunker.chunk_with_token_counts(entry_type, entry.content)
-            if chunk_data:
-                chunk_texts = [c[0] for c in chunk_data]
-                chunk_embeddings = await embedder.embed_batch(chunk_texts)
+        # Create new chunks
+        entry_type = update_data.get("type", entry.type)
+        if hasattr(entry_type, "value"):
+            entry_type = entry_type.value
+        chunk_data = chunker.chunk_with_token_counts(entry_type, entry.content)
+        if chunk_data:
+            chunk_texts = [c[0] for c in chunk_data]
+            chunk_embeddings = await embedder.embed_batch(chunk_texts)
 
-                for i, ((text, token_count), embedding) in enumerate(
-                    zip(chunk_data, chunk_embeddings)
-                ):
-                    chunk = KnowledgeChunk(
-                        entry_id=entry.id,
-                        chunk_index=i,
-                        content=text,
-                        embedding=embedding,
-                        token_count=token_count,
-                        metadata_=entry.metadata_,
-                    )
-                    session.add(chunk)
+            for i, ((text, token_count), embedding) in enumerate(
+                zip(chunk_data, chunk_embeddings)
+            ):
+                chunk = KnowledgeChunk(
+                    entry_id=entry.id,
+                    chunk_index=i,
+                    content=text,
+                    embedding=embedding,
+                    token_count=token_count,
+                    metadata_=entry.metadata_,
+                )
+                session.add(chunk)
 
-        # Log to changelog
-        changed_fields = list(update_data.keys())
-        await log_change(
-            session,
-            entry_id=entry.id,
-            action="updated",
-            entry_title=entry.title,
-            entry_type=entry.type,
-            change_summary=f"Velden bijgewerkt: {', '.join(changed_fields)}",
-            triggered_by="manual",
-            metadata={"changed_fields": changed_fields},
-        )
+    # Log to changelog
+    changed_fields = list(update_data.keys())
+    await log_change(
+        session,
+        entry_id=entry.id,
+        action="updated",
+        entry_title=entry.title,
+        entry_type=entry.type,
+        change_summary=f"Velden bijgewerkt: {', '.join(changed_fields)}",
+        triggered_by="manual",
+        metadata={"changed_fields": changed_fields},
+    )
 
-        await session.commit()
-        await session.refresh(entry, ["chunks"])
-        return _entry_to_response(entry)
-    except HTTPException:
-        raise
-    except Exception:
-        logger.exception("update_entry failed for entry_id=%s, body=%s", entry_id, body.model_dump(exclude_unset=True))
-        raise
+    await session.commit()
+    entry = await _get_entry_or_404(session, entry_id)
+    return _entry_to_response(entry)
 
 
 @router.delete("/entries/{entry_id}", response_model=StatusResponse)
