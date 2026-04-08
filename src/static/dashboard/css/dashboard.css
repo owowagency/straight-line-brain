@@ -1,37 +1,44 @@
-/* === Variables === */
+/* === Variables — White Suit Protocol === */
 :root {
-  --bg: #0a0e17;
-  --bg-card: #111827;
-  --bg-card-hover: #1a2332;
-  --border: #1e293b;
-  --text: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --accent: #6366f1;
-  --accent-light: #818cf8;
-  --green: #22c55e;
-  --amber: #f59e0b;
-  --red: #ef4444;
-  --blue: #3b82f6;
-  --purple: #a855f7;
-  --pink: #ec4899;
-  --teal: #14b8a6;
-  --orange: #f97316;
-  --cyan: #06b6d4;
-  --lime: #84cc16;
+  --bg: #05050A;
+  --bg-card: #0A1628;
+  --bg-card-hover: #0F1E38;
+  --border: #1A2A4A;
+  --text: #FFFFFF;
+  --text-muted: #B8C5D6;
+  --text-dim: #6B7F99;
+  --accent: #00DCFF;
+  --accent-light: #33E5FF;
+  --green: #00DCFF;
+  --amber: #0098B3;
+  --red: #FF3366;
+  --blue: #3B9EFF;
+  --purple: #7B8FFF;
+  --teal: #00B4CC;
+  --cyan: #00DCFF;
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 40px rgba(0,220,255,0.05);
+  --glow-cyan: 0 0 20px rgba(0,220,255,0.3), 0 0 60px rgba(0,220,255,0.1);
+  --glow-cyan-subtle: 0 0 10px rgba(0,220,255,0.15);
+  --grid-color: rgba(0,220,255,0.04);
+  --panel-border: rgba(0,220,255,0.12);
+  --panel-bg: rgba(10,22,40,0.85);
 }
 
 /* === Reset === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   background: var(--bg);
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: center center;
   color: var(--text);
-  line-height: 1.6;
+  line-height: 1.7;
   min-height: 100vh;
 }
 
@@ -41,8 +48,10 @@ body {
   align-items: center;
   gap: 1.5rem;
   padding: 0.75rem 2rem;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
+  background: rgba(10,22,40,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--panel-border);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -82,8 +91,10 @@ body {
 
 .tab-btn:hover { color: var(--text); }
 .tab-btn.active {
-  background: var(--accent);
-  color: white;
+  background: rgba(0,220,255,0.15);
+  color: #00DCFF;
+  border: 1px solid rgba(0,220,255,0.3);
+  box-shadow: var(--glow-cyan-subtle);
 }
 
 .nav-actions { margin-left: auto; }
@@ -106,13 +117,13 @@ body {
 /* === Hero === */
 .hero {
   text-align: center;
-  padding: 3rem 0 2rem;
+  padding: 4rem 0 3rem;
 }
 
 .hero h1 {
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--accent-light), var(--cyan));
+  background: linear-gradient(135deg, #FFFFFF 0%, #00DCFF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -127,7 +138,7 @@ body {
 }
 
 /* === Sections === */
-.section { margin-bottom: 3rem; }
+.section { margin-bottom: 4rem; }
 .section-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -152,16 +163,16 @@ body {
   min-width: 140px;
   text-align: center;
   padding: 1.25rem 0.75rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
   border-radius: var(--radius);
   transition: all 0.3s;
 }
 
 .pipeline-step:hover {
-  border-color: var(--accent);
+  border-color: rgba(0,220,255,0.4);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 8px 24px rgba(0,220,255,0.15), 0 0 0 1px rgba(0,220,255,0.1);
 }
 
 .step-icon {
@@ -216,7 +227,7 @@ body {
 .type-card:hover {
   border-color: var(--card-color, var(--accent));
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0,220,255,0.1);
 }
 
 .type-card .type-icon {
@@ -263,10 +274,10 @@ body {
 .arch-layer:last-child { border-bottom: none; }
 .arch-layer:hover { background: var(--bg-card-hover); }
 
-.layer-intelligence { background: linear-gradient(90deg, rgba(99,102,241,0.12), transparent); }
-.layer-processing { background: linear-gradient(90deg, rgba(14,184,166,0.1), transparent); }
-.layer-storage { background: linear-gradient(90deg, rgba(59,130,246,0.1), transparent); }
-.layer-data { background: linear-gradient(90deg, rgba(168,85,247,0.1), transparent); }
+.layer-intelligence { background: linear-gradient(90deg, rgba(0,220,255,0.10), transparent); }
+.layer-processing { background: linear-gradient(90deg, rgba(0,220,255,0.07), transparent); }
+.layer-storage { background: linear-gradient(90deg, rgba(0,220,255,0.05), transparent); }
+.layer-data { background: linear-gradient(90deg, rgba(0,220,255,0.03), transparent); }
 
 .layer-label {
   font-weight: 700;
@@ -283,8 +294,8 @@ body {
 
 .layer-chip {
   padding: 0.3rem 0.75rem;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,220,255,0.06);
+  border: 1px solid rgba(0,220,255,0.1);
   border-radius: 20px;
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -308,14 +319,15 @@ body {
 }
 
 .integration-card:hover {
-  border-color: var(--accent);
+  border-color: rgba(0,220,255,0.4);
   transform: translateY(-2px);
+  box-shadow: var(--glow-cyan-subtle);
 }
 
 .integration-number {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--accent-light), var(--cyan));
+  background: linear-gradient(135deg, #FFFFFF 0%, #00DCFF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -377,11 +389,12 @@ body {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--border);
+  border: 2px solid rgba(0,220,255,0.15);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 1rem;
+  box-shadow: 0 0 15px rgba(0,220,255,0.2);
 }
 
 .loading-overlay[hidden] { display: none; }
@@ -392,8 +405,8 @@ body {
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(255,51,102,0.08);
+  border: 1px solid rgba(255,51,102,0.25);
   border-radius: var(--radius-sm);
   margin-bottom: 1.5rem;
   color: var(--red);
@@ -402,10 +415,10 @@ body {
 
 .retry-btn {
   padding: 0.4rem 0.8rem;
-  background: var(--red);
-  border: none;
+  background: rgba(255,51,102,0.2);
+  border: 1px solid rgba(255,51,102,0.4);
   border-radius: 6px;
-  color: white;
+  color: #FF3366;
   font-size: 0.8rem;
   cursor: pointer;
   white-space: nowrap;
@@ -419,11 +432,25 @@ body {
 }
 
 .panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
   border-radius: var(--radius);
-  padding: 1.25rem;
+  padding: 1.5rem;
   min-height: 200px;
+  box-shadow: 0 0 0 1px rgba(0,220,255,0.05), 0 4px 30px rgba(0,0,0,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,220,255,0.3), transparent);
+  pointer-events: none;
 }
 
 .panel-full { grid-column: 1 / -1; }
@@ -463,6 +490,7 @@ body {
   font-size: 2.5rem;
   font-weight: 800;
   top: 55%;
+  text-shadow: 0 0 20px currentColor;
 }
 
 /* === Stats Grid === */
@@ -483,6 +511,7 @@ body {
   font-size: 1.75rem;
   font-weight: 800;
   color: var(--accent-light);
+  text-shadow: 0 0 15px rgba(0,220,255,0.3);
 }
 
 .stat-label {
@@ -583,7 +612,7 @@ body {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.coverage-dot.ok { background: var(--green); }
+.coverage-dot.ok { background: var(--green); box-shadow: 0 0 6px rgba(0,220,255,0.4); }
 .coverage-dot.missing { background: var(--red); }
 
 .coverage-count {
@@ -614,9 +643,9 @@ body {
   text-transform: uppercase;
   flex-shrink: 0;
 }
-.issue-badge.warning { background: rgba(245,158,11,0.15); color: var(--amber); }
-.issue-badge.info { background: rgba(59,130,246,0.15); color: var(--blue); }
-.issue-badge.suggestion { background: rgba(168,85,247,0.15); color: var(--purple); }
+.issue-badge.warning { background: rgba(0,152,179,0.15); color: var(--amber); }
+.issue-badge.info { background: rgba(59,158,255,0.15); color: var(--blue); }
+.issue-badge.suggestion { background: rgba(123,143,255,0.15); color: var(--purple); }
 
 .issue-text { color: var(--text-muted); line-height: 1.3; }
 
@@ -679,9 +708,9 @@ body {
   font-weight: 600;
   text-transform: uppercase;
 }
-.cl-action.create { background: rgba(34,197,94,0.15); color: var(--green); }
-.cl-action.update { background: rgba(59,130,246,0.15); color: var(--blue); }
-.cl-action.delete { background: rgba(239,68,68,0.15); color: var(--red); }
+.cl-action.create { background: rgba(0,220,255,0.12); color: var(--green); }
+.cl-action.update { background: rgba(59,158,255,0.12); color: var(--blue); }
+.cl-action.delete { background: rgba(255,51,102,0.12); color: var(--red); }
 
 /* === Responsive === */
 @media (max-width: 1024px) {
@@ -708,8 +737,8 @@ body {
 /* === Scrollbar === */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+::-webkit-scrollbar-thumb { background: rgba(0,220,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,220,255,0.25); }
 
 /* === Changelog Filters === */
 .changelog-filters {
@@ -752,8 +781,8 @@ body {
   align-items: center;
   gap: 1rem;
   padding: 1rem 2rem;
-  background: rgba(239, 68, 68, 0.1);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(255,51,102,0.08);
+  border-bottom: 1px solid rgba(255,51,102,0.25);
   color: var(--red);
 }
 .wiki-error[hidden] { display: none; }
@@ -807,7 +836,7 @@ body {
 }
 
 .wiki-tree-item.active {
-  background: rgba(99, 102, 241, 0.15);
+  background: rgba(0,220,255,0.12);
   color: var(--accent-light);
 }
 

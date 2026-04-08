@@ -74,7 +74,7 @@ function renderCrossRefGraph(indexData) {
     .data(validEdges)
     .enter()
     .append('line')
-    .attr('stroke', 'rgba(255,255,255,0.08)')
+    .attr('stroke', 'rgba(0,220,255,0.06)')
     .attr('stroke-width', d => Math.max(1, (d.score || 0.5) * 3));
 
   // Nodes
@@ -91,9 +91,9 @@ function renderCrossRefGraph(indexData) {
 
   node.append('circle')
     .attr('r', d => Math.max(5, Math.min(12, 4 + (d.related_count || 0))))
-    .attr('fill', d => TYPE_COLORS[d.type] || '#64748b')
+    .attr('fill', d => TYPE_COLORS[d.type] || '#6B7F99')
     .attr('fill-opacity', 0.85)
-    .attr('stroke', 'rgba(255,255,255,0.15)')
+    .attr('stroke', 'rgba(0,220,255,0.15)')
     .attr('stroke-width', 1);
 
   // Labels for nodes with connections
@@ -102,7 +102,7 @@ function renderCrossRefGraph(indexData) {
     .attr('x', 14)
     .attr('y', 4)
     .attr('font-size', '9px')
-    .attr('fill', '#94a3b8')
+    .attr('fill', '#B8C5D6')
     .attr('pointer-events', 'none');
 
   // Hover interactions
@@ -110,14 +110,14 @@ function renderCrossRefGraph(indexData) {
     d3.select(this).select('circle').attr('fill-opacity', 1).attr('stroke-width', 2);
     // Highlight connected edges
     link.attr('stroke', l =>
-      (l.source.id === d.id || l.target.id === d.id) ? TYPE_COLORS[d.type] || '#818cf8' : 'rgba(255,255,255,0.05)'
+      (l.source.id === d.id || l.target.id === d.id) ? TYPE_COLORS[d.type] || '#33E5FF' : 'rgba(0,220,255,0.03)'
     ).attr('stroke-opacity', l =>
       (l.source.id === d.id || l.target.id === d.id) ? 1 : 0.3
     );
   })
   .on('mouseleave', function() {
     d3.select(this).select('circle').attr('fill-opacity', 0.85).attr('stroke-width', 1);
-    link.attr('stroke', 'rgba(255,255,255,0.08)').attr('stroke-opacity', 1);
+    link.attr('stroke', 'rgba(0,220,255,0.06)').attr('stroke-opacity', 1);
   });
 
   // Tick
