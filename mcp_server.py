@@ -46,31 +46,45 @@ def _headers() -> dict:
     return h
 
 
+def _raise_with_detail(r: httpx.Response) -> None:
+    """Raise an error that includes the response body for debugging."""
+    if r.status_code >= 400:
+        try:
+            detail = r.json()
+        except Exception:
+            detail = r.text
+        raise httpx.HTTPStatusError(
+            f"{r.status_code} {r.reason_phrase} for {r.url}: {json.dumps(detail, ensure_ascii=False)}",
+            request=r.request,
+            response=r,
+        )
+
+
 async def _get(path: str, params: dict | None = None) -> dict:
     async with httpx.AsyncClient(base_url=BREIN_URL, timeout=30) as client:
         r = await client.get(path, params=params, headers=_headers())
-        r.raise_for_status()
+        _raise_with_detail(r)
         return r.json()
 
 
 async def _post(path: str, body: dict | None = None) -> dict:
     async with httpx.AsyncClient(base_url=BREIN_URL, timeout=30) as client:
         r = await client.post(path, json=body, headers=_headers())
-        r.raise_for_status()
+        _raise_with_detail(r)
         return r.json()
 
 
 async def _put(path: str, body: dict) -> dict:
     async with httpx.AsyncClient(base_url=BREIN_URL, timeout=30) as client:
         r = await client.put(path, json=body, headers=_headers())
-        r.raise_for_status()
+        _raise_with_detail(r)
         return r.json()
 
 
 async def _delete(path: str) -> dict:
     async with httpx.AsyncClient(base_url=BREIN_URL, timeout=30) as client:
         r = await client.delete(path, headers=_headers())
-        r.raise_for_status()
+        _raise_with_detail(r)
         return r.json()
 
 
@@ -319,9 +333,13 @@ async def ingest_analytics(records: str) -> str:
     """Push analytische data naar het brein (bulk).
 
     Args:
-        records: JSON array van records, elk met: source, metric_type, dimensions, value, period_start, period_end
+        records: JSON array van records, elk met: source, metric_type, dimensions, value, period_start, period_end.
+               Voorbeeld: [{"source": "salesforce", "metric_type": "revenue", "value": 50000, "period_start": "2025-01-01", "period_end": "2025-01-31"}]
     """
     parsed = json.loads(records)
+    # Accept a single record dict — wrap it in a list
+    if isinstance(parsed, dict):
+        parsed = [parsed]
     body = {"records": parsed}
     data = await _post("/api/v1/ingest/analytics", body=body)
     return json.dumps(data, indent=2, ensure_ascii=False)
