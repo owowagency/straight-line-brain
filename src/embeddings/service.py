@@ -8,8 +8,9 @@ from src.config import get_settings
 
 logger = logging.getLogger(__name__)
 
-# Default retrieval instruction for multilingual-e5-large-instruct.
-# The model performs significantly better when queries carry a task prefix.
+# Default retrieval instruction for instruct-tuned embedding models
+# (harrier-oss-v1 / e5-instruct).  The model performs significantly
+# better when queries carry a task prefix.
 _DEFAULT_QUERY_INSTRUCTION = (
     "Gegeven een zoekvraag, vind relevante kennisartikelen die de vraag beantwoorden"
 )
@@ -42,7 +43,9 @@ class EmbeddingService:
 
         settings = get_settings()
         logger.info("Loading embedding model: %s", settings.embedding_model)
-        self._model = SentenceTransformer(settings.embedding_model)
+        self._model = SentenceTransformer(
+            settings.embedding_model, model_kwargs={"dtype": "auto"}
+        )
         logger.info("Embedding model loaded successfully")
 
     # ------------------------------------------------------------------
@@ -73,7 +76,7 @@ class EmbeddingService:
 
     @staticmethod
     def _format_query(text: str, instruction: str | None = None) -> str:
-        """Wrap a query with the Instruct/Query format expected by e5-instruct."""
+        """Wrap a query with the Instruct/Query format expected by harrier / e5-instruct."""
         inst = instruction or _DEFAULT_QUERY_INSTRUCTION
         return f"Instruct: {inst}\nQuery: {text}"
 
