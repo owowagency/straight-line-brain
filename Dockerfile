@@ -10,6 +10,10 @@ FROM python:3.12-slim AS runtime
 
 WORKDIR /app
 COPY --from=builder /install /usr/local
+
+# Pre-load embedding model into the image so first request is instant
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-m3')"
+
 COPY alembic.ini .
 COPY alembic/ ./alembic/
 COPY src/ ./src/
