@@ -1,5 +1,5 @@
 """
-MCP Server for the UPPR Digitaal Brein.
+MCP Server for the Digitaal Brein.
 
 Exposes all brein endpoints as MCP tools that Claude can call directly.
 Communicates with the running Brein API via HTTP.
@@ -10,7 +10,7 @@ Two modes:
 
   2. Remote (HTTP):   python mcp_server.py --remote
      → Hosted MCP server on port 8001 (Streamable HTTP)
-     → UPPR.OS agents connect via: http://brein.uppr.dev:8001/mcp
+     → Agents connect via: http://localhost:8001/mcp
      → Also available as docker compose service
 
 Usage:
@@ -32,7 +32,7 @@ MCP_HOST = os.getenv("MCP_HOST", "0.0.0.0")
 MCP_PORT = int(os.getenv("MCP_PORT", "8001"))
 
 mcp = FastMCP(
-    "UPPR Digitaal Brein",
+    "Digitaal Brein",
     instructions="Knowledge layer voor AI agents — bedrijfskennis, analytics, semantic search. Gebruik deze tools om het Digitaal Brein te bevragen en te vullen.",
     host=MCP_HOST,
     port=MCP_PORT,
@@ -95,7 +95,7 @@ async def _delete(path: str) -> dict:
 
 @mcp.tool()
 async def get_company_profile() -> str:
-    """Haal het bedrijfsprofiel en de propositie op van UPPR."""
+    """Haal het bedrijfsprofiel en de propositie op uit het brein."""
     data = await _get("/api/v1/knowledge/company")
     return json.dumps(data, indent=2, ensure_ascii=False)
 
@@ -114,7 +114,7 @@ async def get_icp_profile(segment: str | None = None) -> str:
 
 @mcp.tool()
 async def get_tone_of_voice() -> str:
-    """Haal de tone of voice richtlijnen op van UPPR."""
+    """Haal de tone of voice richtlijnen op uit het brein."""
     data = await _get("/api/v1/knowledge/tone-of-voice")
     return json.dumps(data, indent=2, ensure_ascii=False)
 

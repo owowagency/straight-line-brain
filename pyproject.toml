@@ -1,7 +1,7 @@
 [project]
-name = "uppr-brein"
+name = "digitaal-brein"
 version = "0.1.0"
-description = "UPPR Digitaal Brein"
+description = "Digitaal Brein — Modulaire kennislaag voor AI agents"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115,<1.0",

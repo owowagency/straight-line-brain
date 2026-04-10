@@ -128,7 +128,7 @@ class SynthesisGenerator:
         entries += await self._fetch_entries_by_type(session, "propositie")
 
         lines = [
-            "# Bedrijfsoverzicht UPPR",
+            "# Bedrijfsoverzicht",
             "",
             f"*Automatisch gegenereerd op basis van {len(entries)} bronnen.*",
             "",
@@ -143,7 +143,7 @@ class SynthesisGenerator:
         source_ids = [str(e.id) for e in entries]
         return await self._upsert_synthesis(
             session, embedder, "company_overview",
-            "Bedrijfsoverzicht UPPR", content, source_ids,
+            "Bedrijfsoverzicht", content, source_ids,
         )
 
     # ------------------------------------------------------------------

@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="UPPR Digitaal Brein",
+    title="Digitaal Brein",
     description="Knowledge Layer voor AI Agents",
     version="0.1.0",
     lifespan=lifespan,
@@ -61,4 +61,4 @@ if static_dir.exists():
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "service": "uppr-digitaal-brein"}
+    return {"status": "ok", "service": "digitaal-brein"}

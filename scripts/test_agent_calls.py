@@ -19,7 +19,7 @@ BASE_URL = "http://localhost:8000"
 async def main():
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=30) as client:
         print("=" * 60)
-        print("UPPR Digitaal Brein — Agent Simulation Tests")
+        print("Digitaal Brein — Agent Simulation Tests")
         print("=" * 60)
 
         # Check health first

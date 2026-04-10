@@ -63,9 +63,10 @@ _BOTH_KEYWORDS = {
 # Narrow endpoint patterns
 _ICP_KEYWORDS = {"icp", "doelgroep", "klantprofiel", "ideal customer"}
 _TOV_KEYWORDS = {"tone of voice", "schrijfstijl", "communicatiestijl", "toon"}
-_COMPANY_KEYWORDS = {"bedrijfsprofiel", "over ons", "wie zijn we", "over uppr"}
+_COMPANY_KEYWORDS = {"bedrijfsprofiel", "over ons", "wie zijn we"}
 _SERVICE_KEYWORDS = {"dienst", "diensten", "service", "services", "product", "aanbod"}
-_SEGMENT_NAMES = {"vve", "woningcorporatie", "corporatie", "schilder", "vastgoed", "beheerder"}
+# Vul hier je eigen segmentnamen in voor narrow routing
+_SEGMENT_NAMES: set[str] = set()
 
 # Numeric patterns (signal structured intent)
 _NUMERIC_PATTERN = re.compile(

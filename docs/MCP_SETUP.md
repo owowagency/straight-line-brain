@@ -1,4 +1,4 @@
-# MCP Server Setup — UPPR Digitaal Brein
+# MCP Server Setup — Digitaal Brein
 
 Het Digitaal Brein kan als MCP server worden gebruikt met Claude Code en Claude Desktop.
 
@@ -87,7 +87,7 @@ Na registratie heeft Claude toegang tot deze tools:
 | Tool | Beschrijving |
 |------|-------------|
 | `get_company_profile` | Bedrijfsprofiel + propositie |
-| `get_icp_profile` | ICP per segment (VVE, corporatie, schilder) |
+| `get_icp_profile` | ICP per segment |
 | `get_tone_of_voice` | Tone of voice richtlijnen |
 | `get_services` | Diensten, optioneel per segment |
 | `search_knowledge` | Semantische vector search |
@@ -118,10 +118,10 @@ Na registratie heeft Claude toegang tot deze tools:
 | `list_active_endpoints` | Actieve dynamische endpoints |
 | `detect_query_patterns` | Terugkerende patronen detecteren |
 
-## Optie 3: Remote MCP Server (voor UPPR.OS agents)
+## Optie 3: Remote MCP Server
 
 De MCP server kan ook als **hosted remote server** draaien via Streamable HTTP.
-UPPR.OS agents (of andere MCP clients) verbinden dan via HTTP — geen lokale Python nodig.
+Agents (of andere MCP clients) verbinden dan via HTTP — geen lokale Python nodig.
 
 ### Via Docker Compose (aanbevolen)
 
@@ -132,10 +132,10 @@ docker compose up -d
 # API op :8000, MCP server op :8001
 ```
 
-UPPR.OS agents verbinden naar:
+Agents verbinden naar:
 ```
 http://localhost:8001/mcp
-# Of publiek: https://brein.uppr.dev:8001/mcp
+# Of publiek: https://your-domain.com:8001/mcp
 ```
 
 ### Handmatig starten
@@ -146,15 +146,15 @@ python mcp_server.py --remote
 MCP_TRANSPORT=streamable-http MCP_PORT=8001 python mcp_server.py
 ```
 
-### UPPR.OS Agent configuratie
+### Agent configuratie
 
-In je UPPR.OS agent config, voeg de MCP server toe als remote tool provider:
+In je agent config, voeg de MCP server toe als remote tool provider:
 
 ```json
 {
   "mcpServers": {
     "digitaal-brein": {
-      "url": "http://brein.uppr.dev:8001/mcp"
+      "url": "http://localhost:8001/mcp"
     }
   }
 }
@@ -176,8 +176,8 @@ cp .env.example .env
 docker compose up -d
 
 # 4. (Optioneel) Nginx reverse proxy voor HTTPS
-# brein.uppr.dev:8000 → API
-# brein.uppr.dev:8001 → MCP server
+# your-domain.com:8000 → API
+# your-domain.com:8001 → MCP server
 ```
 
 ### Environment variabelen
@@ -195,8 +195,8 @@ docker compose up -d
 Na configuratie kun je het testen in Claude Code:
 
 ```
-> Wat is het bedrijfsprofiel van UPPR?
-> Wat is het ICP voor VVE-beheerders?
+> Wat is het bedrijfsprofiel?
+> Wat zijn de ICP-profielen?
 > Zoek in de kennisbank naar "tone of voice voor LinkedIn"
 > Hoeveel deals hebben we in Q1 2025?
 ```

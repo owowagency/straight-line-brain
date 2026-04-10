@@ -2,7 +2,7 @@ services:
   db:
     image: pgvector/pgvector:pg16
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-uppr_brein}
+      POSTGRES_DB: ${POSTGRES_DB:-digitaal_brein}
       POSTGRES_USER: ${POSTGRES_USER:-brein}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-brein_dev}
     ports:
@@ -11,7 +11,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-brein} -d ${POSTGRES_DB:-uppr_brein}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-brein} -d ${POSTGRES_DB:-digitaal_brein}"]
       interval: 5s
       timeout: 5s
       retries: 5

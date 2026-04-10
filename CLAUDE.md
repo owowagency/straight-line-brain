@@ -1,4 +1,4 @@
-# UPPR Digitaal Brein
+# Digitaal Brein
 
 ## What
 Modular knowledge layer for AI agents — bestaande uit een FastAPI MCP-server, PostgreSQL met pgvector voor gecombineerde structured + semantic search, MinIO voor multimodale bestanden, en een Query Planner voor intelligente routering. Het brein compileert kennis automatisch via cross-references en synthese-documenten.

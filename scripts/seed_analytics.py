@@ -1,11 +1,8 @@
 """
 Seed script: push analytische testdata en genereer samenvattingen.
 
-Pusht:
-- 12 maanden aan fictieve sales data (2025)
-- Per segment (VVE, woningcorporatie, schilder)
-- Metrics: deal, revenue, conversie, pipeline
-- Genereert samenvattingen per kwartaal
+Vul SEGMENTS, METRICS en BASE_VALUES hieronder in met je eigen data.
+Het script genereert 12 maanden aan data en kwartaalsamenvattingen.
 
 Draai via:
     docker compose exec api python -m scripts.seed_analytics
@@ -26,16 +23,21 @@ from src.embeddings.service import EmbeddingService
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-SEGMENTS = ["vve", "woningcorporatie", "schilder"]
+# ---------------------------------------------------------------------------
+# Vul hier je eigen segmenten en metrics in
+# ---------------------------------------------------------------------------
+SEGMENTS = [
+    # Voorbeeld: "segment_a", "segment_b"
+]
 METRICS = ["deal", "revenue", "conversie", "pipeline"]
-SOURCES = ["salesforce"]
+SOURCES = ["crm"]
 
 # Base values per segment per metric (monthly)
-BASE_VALUES = {
-    "vve": {"deal": 8, "revenue": 12000, "conversie": 0.15, "pipeline": 25000},
-    "woningcorporatie": {"deal": 3, "revenue": 45000, "conversie": 0.10, "pipeline": 80000},
-    "schilder": {"deal": 12, "revenue": 5000, "conversie": 0.22, "pipeline": 15000},
-}
+# Voorbeeld:
+# BASE_VALUES = {
+#     "segment_a": {"deal": 10, "revenue": 20000, "conversie": 0.15, "pipeline": 50000},
+# }
+BASE_VALUES = {}
 
 
 def _generate_monthly_data() -> list[dict]:

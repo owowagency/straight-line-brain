@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     )
 
     # PostgreSQL
-    database_url: str = "postgresql+asyncpg://brein:brein_dev@db:5432/uppr_brein"
+    database_url: str = "postgresql+asyncpg://brein:brein_dev@db:5432/digitaal_brein"
 
     # Redis
     redis_url: str = "redis://redis:6379/0"
@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     minio_endpoint: str = "minio:9000"
     minio_root_user: str = "minioadmin"
     minio_root_password: str = "minioadmin"
-    minio_bucket: str = "uppr-brein"
+    minio_bucket: str = "digitaal-brein"
 
     # API
     api_host: str = "0.0.0.0"
