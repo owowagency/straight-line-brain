@@ -560,6 +560,47 @@ textarea:focus-visible {
   transform: skewX(-6deg);
 }
 
+/* Faded horizontal line texture overlay */
+.sll-lines {
+  position: relative;
+}
+.sll-lines::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  z-index: 1;
+  transform: rotate(-6deg);
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 56px,
+    oklch(0 0 0 / 0.06) 57px,
+    oklch(0 0 0 / 0.12) 58px,
+    oklch(0 0 0 / 0.06) 59px,
+    transparent 60px
+  );
+  mask-image:
+    linear-gradient(180deg, transparent 0%, black 10%, black 90%, transparent 100%),
+    linear-gradient(90deg, black 0%, black 15%, transparent 25%, transparent 75%, black 85%, black 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, black 10%, black 90%, transparent 100%),
+    linear-gradient(90deg, black 0%, black 15%, transparent 25%, transparent 75%, black 85%, black 100%);
+  -webkit-mask-composite: source-in;
+}
+.dark .sll-lines::before {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 56px,
+    oklch(0 0 0 / 0.15) 57px,
+    oklch(0 0 0 / 0.3) 58px,
+    oklch(0 0 0 / 0.15) 59px,
+    transparent 60px
+  );
+}
+
 /* SLL parallelogram message bubble — echoes the logo shape
    The element itself is the gold border (clipped to parallelogram).
    ::after draws the inner fill on top, inset by 1px, leaving the gold edge visible.
