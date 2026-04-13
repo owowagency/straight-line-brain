@@ -20,7 +20,7 @@ function renderHealthGauge(lint) {
 
   if (healthChart) {
     healthChart.data.datasets[0].data = [score, 100 - score];
-    healthChart.data.datasets[0].backgroundColor = [color, 'rgba(0,220,255,0.04)'];
+    healthChart.data.datasets[0].backgroundColor = [color, css('--accent-04')];
     healthChart.update();
     return;
   }
@@ -30,7 +30,7 @@ function renderHealthGauge(lint) {
     data: {
       datasets: [{
         data: [score, 100 - score],
-        backgroundColor: [color, 'rgba(0,220,255,0.04)'],
+        backgroundColor: [color, css('--accent-04')],
         borderWidth: 0,
       }],
     },

@@ -1,29 +1,68 @@
-/* === Variables — White Suit Protocol === */
+/* === Variables — Straight-Line Leadership === */
 :root {
-  --bg: #05050A;
-  --bg-card: #0A1628;
-  --bg-card-hover: #0F1E38;
-  --border: #1A2A4A;
-  --text: #FFFFFF;
-  --text-muted: #B8C5D6;
-  --text-dim: #6B7F99;
-  --accent: #00DCFF;
-  --accent-light: #33E5FF;
-  --green: #00DCFF;
-  --amber: #0098B3;
-  --red: #FF3366;
-  --blue: #3B9EFF;
-  --purple: #7B8FFF;
-  --teal: #00B4CC;
-  --cyan: #00DCFF;
-  --radius: 12px;
-  --radius-sm: 8px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 40px rgba(0,220,255,0.05);
-  --glow-cyan: 0 0 20px rgba(0,220,255,0.3), 0 0 60px rgba(0,220,255,0.1);
-  --glow-cyan-subtle: 0 0 10px rgba(0,220,255,0.15);
-  --grid-color: rgba(0,220,255,0.04);
-  --panel-border: rgba(0,220,255,0.12);
-  --panel-bg: rgba(10,22,40,0.85);
+  /* Backgrounds */
+  --bg: #121212;
+  --bg-card: #191E24;
+  --bg-card-hover: #242A35;
+
+  /* Borders */
+  --border: #242A35;
+
+  /* Text */
+  --text: #FDFDFD;
+  --text-muted: #96A5B9;
+  --text-dim: #49546A;
+
+  /* Brand accent */
+  --accent: #DFB443;
+  --accent-light: #DFB443;
+
+  /* Semantic */
+  --green: #1E9C89;
+  --amber: #B2913D;
+  --red: #F04F4A;
+  --blue: #2C03D3;
+  --purple: #8D84EA;
+  --teal: #1E9C89;
+  --cyan: #DFB443;
+
+  /* Layout */
+  --radius: 8px;
+  --radius-sm: 4px;
+
+  /* Accent at various opacities */
+  --accent-03: rgba(223,180,67,0.03);
+  --accent-04: rgba(223,180,67,0.04);
+  --accent-05: rgba(223,180,67,0.05);
+  --accent-06: rgba(223,180,67,0.06);
+  --accent-07: rgba(223,180,67,0.07);
+  --accent-10: rgba(223,180,67,0.10);
+  --accent-12: rgba(223,180,67,0.12);
+  --accent-15: rgba(223,180,67,0.15);
+  --accent-20: rgba(223,180,67,0.20);
+  --accent-25: rgba(223,180,67,0.25);
+  --accent-30: rgba(223,180,67,0.30);
+  --accent-40: rgba(223,180,67,0.40);
+
+  /* Composite tokens */
+  --shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 40px var(--accent-05);
+  --glow: 0 0 20px var(--accent-30), 0 0 60px var(--accent-10);
+  --glow-subtle: 0 0 10px var(--accent-15);
+  --grid-color: var(--accent-04);
+  --panel-border: var(--accent-12);
+  --panel-bg: rgba(25,30,36,0.85);
+
+  /* Type colors (read by JS via getComputedStyle) */
+  --type-bedrijfsprofiel: #DFB443;
+  --type-propositie: #2C03D3;
+  --type-icp: #1E9C89;
+  --type-dienst: #8D84EA;
+  --type-tone-of-voice: #B2913D;
+  --type-werkwijze: #1E9C89;
+  --type-brand: #DFB443;
+  --type-synthese: #2C03D3;
+  --type-inzicht: #DFB443;
+  --type-overig: #49546A;
 }
 
 /* === Reset === */
@@ -48,7 +87,7 @@ body {
   align-items: center;
   gap: 1.5rem;
   padding: 0.75rem 2rem;
-  background: rgba(10,22,40,0.95);
+  background: rgba(20,24,28,0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--panel-border);
@@ -91,10 +130,10 @@ body {
 
 .tab-btn:hover { color: var(--text); }
 .tab-btn.active {
-  background: rgba(0,220,255,0.15);
-  color: #00DCFF;
-  border: 1px solid rgba(0,220,255,0.3);
-  box-shadow: var(--glow-cyan-subtle);
+  background: var(--accent-15);
+  color: var(--accent);
+  border: 1px solid var(--accent-30);
+  box-shadow: var(--glow-subtle);
 }
 
 .nav-actions { margin-left: auto; }
@@ -123,7 +162,7 @@ body {
 .hero h1 {
   font-size: 3.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #FFFFFF 0%, #00DCFF 100%);
+  background: linear-gradient(135deg, #FDFDFD 0%, #DFB443 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -170,9 +209,9 @@ body {
 }
 
 .pipeline-step:hover {
-  border-color: rgba(0,220,255,0.4);
+  border-color: var(--accent-40);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,220,255,0.15), 0 0 0 1px rgba(0,220,255,0.1);
+  box-shadow: 0 8px 24px var(--accent-15), 0 0 0 1px var(--accent-10);
 }
 
 .step-icon {
@@ -227,7 +266,7 @@ body {
 .type-card:hover {
   border-color: var(--card-color, var(--accent));
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,220,255,0.1);
+  box-shadow: 0 8px 24px var(--accent-10);
 }
 
 .type-card .type-icon {
@@ -274,10 +313,10 @@ body {
 .arch-layer:last-child { border-bottom: none; }
 .arch-layer:hover { background: var(--bg-card-hover); }
 
-.layer-intelligence { background: linear-gradient(90deg, rgba(0,220,255,0.10), transparent); }
-.layer-processing { background: linear-gradient(90deg, rgba(0,220,255,0.07), transparent); }
-.layer-storage { background: linear-gradient(90deg, rgba(0,220,255,0.05), transparent); }
-.layer-data { background: linear-gradient(90deg, rgba(0,220,255,0.03), transparent); }
+.layer-intelligence { background: linear-gradient(90deg, var(--accent-10), transparent); }
+.layer-processing { background: linear-gradient(90deg, var(--accent-07), transparent); }
+.layer-storage { background: linear-gradient(90deg, var(--accent-05), transparent); }
+.layer-data { background: linear-gradient(90deg, var(--accent-03), transparent); }
 
 .layer-label {
   font-weight: 700;
@@ -294,8 +333,8 @@ body {
 
 .layer-chip {
   padding: 0.3rem 0.75rem;
-  background: rgba(0,220,255,0.06);
-  border: 1px solid rgba(0,220,255,0.1);
+  background: var(--accent-06);
+  border: 1px solid var(--accent-10);
   border-radius: 20px;
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -319,15 +358,15 @@ body {
 }
 
 .integration-card:hover {
-  border-color: rgba(0,220,255,0.4);
+  border-color: var(--accent-40);
   transform: translateY(-2px);
-  box-shadow: var(--glow-cyan-subtle);
+  box-shadow: var(--glow-subtle);
 }
 
 .integration-number {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #FFFFFF 0%, #00DCFF 100%);
+  background: linear-gradient(135deg, #FDFDFD 0%, #DFB443 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -389,12 +428,12 @@ body {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 2px solid rgba(0,220,255,0.15);
+  border: 2px solid var(--accent-15);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 1rem;
-  box-shadow: 0 0 15px rgba(0,220,255,0.2);
+  box-shadow: 0 0 15px var(--accent-20);
 }
 
 .loading-overlay[hidden] { display: none; }
@@ -437,7 +476,7 @@ body {
   border-radius: var(--radius);
   padding: 1.5rem;
   min-height: 200px;
-  box-shadow: 0 0 0 1px rgba(0,220,255,0.05), 0 4px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 0 0 1px var(--accent-05), 0 4px 30px rgba(0,0,0,0.3);
   position: relative;
   overflow: hidden;
 }
@@ -449,7 +488,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,220,255,0.3), transparent);
+  background: linear-gradient(90deg, transparent, var(--accent-30), transparent);
   pointer-events: none;
 }
 
@@ -511,7 +550,7 @@ body {
   font-size: 1.75rem;
   font-weight: 800;
   color: var(--accent-light);
-  text-shadow: 0 0 15px rgba(0,220,255,0.3);
+  text-shadow: 0 0 15px var(--accent-30);
 }
 
 .stat-label {
@@ -612,7 +651,7 @@ body {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.coverage-dot.ok { background: var(--green); box-shadow: 0 0 6px rgba(0,220,255,0.4); }
+.coverage-dot.ok { background: var(--green); box-shadow: 0 0 6px var(--accent-40); }
 .coverage-dot.missing { background: var(--red); }
 
 .coverage-count {
@@ -708,7 +747,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
 }
-.cl-action.create { background: rgba(0,220,255,0.12); color: var(--green); }
+.cl-action.create { background: var(--accent-12); color: var(--green); }
 .cl-action.update { background: rgba(59,158,255,0.12); color: var(--blue); }
 .cl-action.delete { background: rgba(255,51,102,0.12); color: var(--red); }
 
@@ -737,8 +776,8 @@ body {
 /* === Scrollbar === */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,220,255,0.15); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,220,255,0.25); }
+::-webkit-scrollbar-thumb { background: var(--accent-15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-25); }
 
 /* === Changelog Filters === */
 .changelog-filters {
@@ -836,7 +875,7 @@ body {
 }
 
 .wiki-tree-item.active {
-  background: rgba(0,220,255,0.12);
+  background: var(--accent-12);
   color: var(--accent-light);
 }
 
