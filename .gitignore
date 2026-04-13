@@ -39,3 +39,9 @@ alembic/versions/__pycache__/
 
 # Model cache
 models/
+
+# Node
+node_modules/
+
+# Playwright MCP
+.playwright-mcp/

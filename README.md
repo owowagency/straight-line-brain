@@ -17,6 +17,30 @@ docker compose exec api python -m scripts.seed_analytics
 - MCP server: `http://localhost:8001/mcp`
 - Dashboard: `http://localhost:8000/dashboard`
 
+Root API (`http://localhost:8000/`) now returns a small status JSON with links.
+
+## Local Dev (Terminal Logs)
+
+If you prefer seeing logs directly in your terminal instead of Docker logs:
+
+```bash
+pnpm dev
+```
+
+This command:
+- starts infra containers only (`db`, `redis`, `minio`, `chatbot-db`)
+- runs API locally on `:8000`
+- runs MCP locally on `:8001`
+- runs chatbot locally on `:3000`
+- reads keys from root `.env` (set `OPENAI_API_KEY` for GPT models)
+
+Useful helpers:
+
+```bash
+pnpm dev:infra   # start only infra containers
+pnpm dev:down    # stop docker compose stack
+```
+
 ## What's Included
 
 - **Knowledge CRUD** -- entries met automatische embedding + chunking

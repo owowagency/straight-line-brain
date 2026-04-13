@@ -33,6 +33,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+@app.get("/")
+async def root():
+    return {
+        "service": "digitaal-brein",
+        "status": "ok",
+        "docs": "/docs",
+        "health": "/health",
+        "dashboard": "/dashboard",
+    }
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     body = await request.body()

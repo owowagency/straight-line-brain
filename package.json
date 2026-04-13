@@ -1,0 +1,10 @@
+{
+  "name": "straight-line-brain",
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "dev": "bash scripts/dev-local.sh",
+    "dev:infra": "docker compose up -d db redis minio chatbot-db",
+    "dev:down": "docker compose down"
+  }
+}

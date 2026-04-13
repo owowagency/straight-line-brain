@@ -26,18 +26,16 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Vul hier je eigen segmenten en metrics in
 # ---------------------------------------------------------------------------
-SEGMENTS = [
-    # Voorbeeld: "segment_a", "segment_b"
-]
+SEGMENTS = ["scale_up", "corporate", "sme"]
 METRICS = ["deal", "revenue", "conversie", "pipeline"]
 SOURCES = ["crm"]
 
 # Base values per segment per metric (monthly)
-# Voorbeeld:
-# BASE_VALUES = {
-#     "segment_a": {"deal": 10, "revenue": 20000, "conversie": 0.15, "pipeline": 50000},
-# }
-BASE_VALUES = {}
+BASE_VALUES = {
+    "scale_up": {"deal": 3, "revenue": 45000, "conversie": 0.22, "pipeline": 180000},
+    "corporate": {"deal": 1, "revenue": 85000, "conversie": 0.12, "pipeline": 350000},
+    "sme": {"deal": 5, "revenue": 15000, "conversie": 0.30, "pipeline": 60000},
+}
 
 
 def _generate_monthly_data() -> list[dict]:
