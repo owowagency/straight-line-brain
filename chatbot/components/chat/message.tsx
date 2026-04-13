@@ -345,7 +345,7 @@ const PurePreviewMessage = ({
       >
         {isAssistant && (
           <div className="flex h-[calc(13px*1.65)] shrink-0 items-center">
-            <img alt="SLL" className="size-7 rounded-lg object-cover ring-1 ring-primary/20" src="/sll-man.webp" />
+            <img alt="SLL" className="size-10 rounded-full object-cover" src="/sll-man.webp" />
           </div>
         )}
         {isAssistant ? (
