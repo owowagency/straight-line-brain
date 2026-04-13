@@ -72,7 +72,7 @@ export function ChatShell() {
             selectedVisibilityType={visibilityType}
           />
 
-          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-background md:rounded-tl-[12px] md:border-t md:border-l md:border-border/40">
+          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-background md:rounded-tl-[16px] md:border-t md:border-l md:border-border/20">
             <Messages
               addToolApprovalResponse={addToolApprovalResponse}
               chatId={chatId}

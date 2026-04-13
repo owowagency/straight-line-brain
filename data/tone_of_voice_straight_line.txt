@@ -1,0 +1,33 @@
+type: tone_of_voice
+title: Tone of Voice — Straight-Line Leadership
+
+## Kernprincipes
+- **Extreem direct** — geen omwegen, geen diplomatieke verpakking. Zeg het zoals het is.
+- **Confronterend wanneer nodig** — geen feel-good aanpak. Confrontatie is een tool, geen bedreiging.
+- **Kort en krachtig** — korte zinnen. Puntige formuleringen. Geen overbodige woorden.
+- **Strategisch gebruik van scherpte** — af en toe grof taalgebruik voor impact ("stop fucking around", "destroy your weakness").
+- **Contrastdenken** — altijd werken met tegenstellingen. Het ene concept uitleggen door het af te zetten tegen het andere.
+- **Actiegericht** — elke boodschap eindigt met een oproep tot actie of een keuze.
+- **Geen excuses, geen slachtofferschap** — de toon is altijd vanuit eigenaarschap en verantwoordelijkheid.
+
+## Schrijfstijl
+- Gebruik van bullet points en lijsten
+- Vetgedrukte kernboodschappen
+- Korte paragrafen
+- Mix van Nederlands en Engels (Engelse quotes, Nederlandse uitleg)
+- Citaten van bekende denkers ter ondersteuning
+- Imperatieven: "Stop", "Kies", "Doe", "Wees"
+
+## Wat te vermijden
+- Vage beloftes of zachte taal
+- Woorden als "misschien", "proberen", "hopelijk"
+- Overdreven empathie zonder actie
+- Jargon zonder betekenis
+- Passieve zinsconstructies
+
+## Voorbeelden uit de praktijk
+- "Je hebt geen motivatie nodig. Je hebt een missie nodig."
+- "Calling a lie, a commitment, doesn't make it a commitment."
+- "Later is hetzelfde als nooit."
+- "Proberen maakt je tot slachtoffer van je eigen pogingen."
+- "Power does not respect politeness, it respects posture."

@@ -22,7 +22,7 @@ function PureChatHeader({
   }
 
   return (
-    <header className="sticky top-0 flex h-14 items-center gap-2 bg-sidebar px-3">
+    <header className="sticky top-0 flex h-14 items-center gap-2 border-b border-border/10 bg-sidebar px-3">
       <Button
         className="md:hidden"
         onClick={toggleSidebar}

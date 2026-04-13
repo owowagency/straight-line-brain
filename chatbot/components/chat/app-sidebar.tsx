@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  MessageSquareIcon,
   PanelLeftIcon,
   PenSquareIcon,
   TrashIcon,
@@ -43,6 +42,7 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { SLLLogo } from "./icons";
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -67,17 +67,24 @@ export function AppSidebar({ user }: { user: User | undefined }) {
   return (
     <>
       <Sidebar collapsible="icon">
-        <SidebarHeader className="pb-0 pt-3">
+        <SidebarHeader className="pb-2 pt-4">
           <SidebarMenu>
             <SidebarMenuItem className="flex flex-row items-center justify-between">
               <div className="group/logo relative flex items-center justify-center">
+                <Link
+                  className="flex items-center px-2 py-1 group-data-[collapsible=icon]:hidden"
+                  href="/"
+                  onClick={() => setOpenMobile(false)}
+                >
+                  <SLLLogo className="text-sidebar-primary" size={190} />
+                </Link>
                 <SidebarMenuButton
                   asChild
-                  className="size-8 !px-0 items-center justify-center group-data-[collapsible=icon]:group-hover/logo:opacity-0"
-                  tooltip="Chatbot"
+                  className="hidden size-8 !px-0 items-center justify-center group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:group-hover/logo:opacity-0"
+                  tooltip="Straight Line Leadership"
                 >
                   <Link href="/" onClick={() => setOpenMobile(false)}>
-                    <MessageSquareIcon className="size-4 text-sidebar-foreground/50" />
+                    <PanelLeftIcon className="size-4" />
                   </Link>
                 </SidebarMenuButton>
                 <Tooltip>
@@ -106,7 +113,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    className="h-8 rounded-lg border border-sidebar-border text-[13px] text-sidebar-foreground/70 transition-colors duration-150 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    className="h-8 rounded-lg border border-sidebar-border text-[13px] text-sidebar-foreground/70 transition-colors duration-200 hover:border-sidebar-primary/30 hover:text-sidebar-primary"
                     onClick={() => {
                       setOpenMobile(false);
                       router.push("/");

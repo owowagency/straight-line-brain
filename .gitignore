@@ -31,8 +31,8 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Docker volumes (local data)
-data/
+# Docker volumes (local data) — but keep data/*.txt seed files
+# data/  (disabled: data/ now contains seed content)
 
 # Alembic
 alembic/versions/__pycache__/
@@ -45,3 +45,7 @@ node_modules/
 
 # Playwright MCP
 .playwright-mcp/
+# SLL source docs (PDFs, audiobook, screenshots — not for git)
+/Straight Line Brain - Docs/
+*.mp3
+pdfstotext.txt
