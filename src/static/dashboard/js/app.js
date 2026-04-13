@@ -13,17 +13,19 @@ const TYPE_LABELS = {
   overig: 'Overig',
 };
 
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
 const TYPE_COLORS = {
-  bedrijfsprofiel: '#00DCFF',
-  propositie: '#3B9EFF',
-  icp: '#00B4CC',
-  dienst: '#5E8FFF',
-  tone_of_voice: '#7B8FFF',
-  werkwijze: '#009DB8',
-  brand: '#4ECFFF',
-  synthese: '#2A5AFF',
-  inzicht: '#33E5FF',
-  overig: '#6B7F99',
+  bedrijfsprofiel: css('--type-bedrijfsprofiel'),
+  propositie:      css('--type-propositie'),
+  icp:             css('--type-icp'),
+  dienst:          css('--type-dienst'),
+  tone_of_voice:   css('--type-tone-of-voice'),
+  werkwijze:       css('--type-werkwijze'),
+  brand:           css('--type-brand'),
+  synthese:        css('--type-synthese'),
+  inzicht:         css('--type-inzicht'),
+  overig:          css('--type-overig'),
 };
 
 /* === API Client === */

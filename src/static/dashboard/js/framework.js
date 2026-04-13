@@ -32,7 +32,7 @@ const TYPE_ICONS = {
 
   const types = Object.keys(TYPE_LABELS);
   types.forEach(type => {
-    const color = TYPE_COLORS[type] || '#6B7F99';
+    const color = TYPE_COLORS[type] || css('--text-dim');
     const card = document.createElement('div');
     card.className = 'type-card';
     card.style.setProperty('--card-color', color);

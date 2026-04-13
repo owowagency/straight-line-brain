@@ -44,7 +44,7 @@ Pas het dashboard aan via CSS variabelen in `src/static/dashboard/dashboard.css`
 ```css
 :root {
   --bg: #05050A;
-  --accent: #00DCFF;
+  --accent: #DFB443;
   /* etc. */
 }
 ```

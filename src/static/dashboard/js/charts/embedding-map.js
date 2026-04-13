@@ -50,9 +50,9 @@ function renderEmbeddingMap(data) {
     .attr('cx', d => xScale(d.x))
     .attr('cy', d => yScale(d.y))
     .attr('r', 5)
-    .attr('fill', d => TYPE_COLORS[d.type] || '#6B7F99')
+    .attr('fill', d => TYPE_COLORS[d.type] || css('--text-dim'))
     .attr('fill-opacity', 0.8)
-    .attr('stroke', 'rgba(0,220,255,0.15)')
+    .attr('stroke', css('--accent-15'))
     .attr('stroke-width', 0.5)
     .style('cursor', 'pointer')
     .on('mouseenter', function(event, d) {
@@ -71,7 +71,7 @@ function renderEmbeddingMap(data) {
   typesPresent.forEach(type => {
     const item = document.createElement('span');
     item.className = 'legend-item';
-    item.innerHTML = `<span class="legend-dot" style="background:${TYPE_COLORS[type] || '#6B7F99'}"></span>${TYPE_LABELS[type] || type}`;
+    item.innerHTML = `<span class="legend-dot" style="background:${TYPE_COLORS[type] || css('--text-dim')}"></span>${TYPE_LABELS[type] || type}`;
     legendDiv.appendChild(item);
   });
   container.appendChild(legendDiv);
