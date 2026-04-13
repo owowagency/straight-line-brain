@@ -18,6 +18,7 @@ COPY alembic.ini .
 COPY alembic/ ./alembic/
 COPY src/ ./src/
 COPY scripts/ ./scripts/
+COPY data/ ./data/
 COPY mcp_server.py .
 
 EXPOSE 8000

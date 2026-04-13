@@ -185,12 +185,8 @@
     text-rendering: optimizeLegibility;
   }
   .dark body {
-    background: linear-gradient(
-      180deg,
-      oklch(0.13 0.03 260) 0%,
-      oklch(0.105 0.025 260) 100%
-    );
-    background-attachment: fixed;
+    background:
+      linear-gradient(180deg, oklch(0.13 0.03 260) 0%, oklch(0.105 0.025 260) 100%) fixed;
   }
   ::selection {
     background: oklch(0.72 0.12 80 / 0.3);
@@ -562,6 +558,44 @@ textarea:focus-visible {
 
 @utility skew-sll {
   transform: skewX(-6deg);
+}
+
+/* SLL parallelogram message bubble — echoes the logo shape
+   The element itself is the gold border (clipped to parallelogram).
+   ::after draws the inner fill on top, inset by 1px, leaving the gold edge visible.
+   Text content naturally sits on top of both via normal flow. */
+.sll-message-bubble {
+  position: relative;
+  isolation: isolate;
+  clip-path: polygon(
+    10px 0,
+    100% 0,
+    calc(100% - 10px) 100%,
+    0 100%
+  );
+  background: oklch(0.72 0.12 80 / 0.3);
+}
+
+.sll-message-bubble::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  clip-path: polygon(
+    9px 0,
+    100% 0,
+    calc(100% - 9px) 100%,
+    0 100%
+  );
+  background: oklch(0.72 0.12 80 / 0.06);
+  z-index: -1;
+}
+
+.dark .sll-message-bubble {
+  background: oklch(0.72 0.12 80 / 0.35);
+}
+
+.dark .sll-message-bubble::after {
+  background: oklch(0.72 0.12 80 / 0.08);
 }
 
 [data-testid="artifact"] {
