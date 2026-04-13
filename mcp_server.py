@@ -20,11 +20,15 @@ Usage:
 """
 
 import json
+import logging
 import os
 import sys
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger("mcp")
 
 BREIN_URL = os.getenv("BREIN_URL", "http://localhost:8000")
 API_KEY = os.getenv("BREIN_API_KEY", "")
@@ -61,16 +65,20 @@ def _raise_with_detail(r: httpx.Response) -> None:
 
 
 async def _get(path: str, params: dict | None = None) -> dict:
+    logger.info("→ GET %s %s", path, params or "")
     async with httpx.AsyncClient(base_url=BREIN_URL, timeout=30) as client:
         r = await client.get(path, params=params, headers=_headers())
         _raise_with_detail(r)
+        logger.info("← %s %s (%dms)", r.status_code, path, int(r.elapsed.total_seconds() * 1000))
         return r.json()
 
 
 async def _post(path: str, body: dict | None = None) -> dict:
+    logger.info("→ POST %s %s", path, json.dumps(body, ensure_ascii=False)[:200] if body else "")
     async with httpx.AsyncClient(base_url=BREIN_URL, timeout=30) as client:
         r = await client.post(path, json=body, headers=_headers())
         _raise_with_detail(r)
+        logger.info("← %s %s (%dms)", r.status_code, path, int(r.elapsed.total_seconds() * 1000))
         return r.json()
 
 

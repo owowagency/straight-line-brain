@@ -90,6 +90,7 @@ MCP_PID=$!
   AUTH_SECRET="${AUTH_SECRET:-e3b0c44298fc1c149afbf4c8996fb924}" \
   POSTGRES_URL="postgresql://chatbot:chatbot_dev@localhost:5433/chatbot" \
   MCP_SERVER_URL="http://localhost:8001/mcp" \
+  REDIS_URL="" \
   pnpm dev 2>&1
 ) | sed -u 's/^/[chatbot] /' &
 CHATBOT_PID=$!

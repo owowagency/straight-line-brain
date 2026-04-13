@@ -22,7 +22,7 @@ import { getChatHistoryPaginationKey } from "@/components/chat/sidebar-history";
 import { toast } from "@/components/chat/toast";
 import type { VisibilityType } from "@/components/chat/visibility-selector";
 import { useAutoResume } from "@/hooks/use-auto-resume";
-import { DEFAULT_CHAT_MODEL } from "@/lib/ai/models";
+import { DEFAULT_CHAT_MODEL, type ChatModel } from "@/lib/ai/models";
 import type { Vote } from "@/lib/db/schema";
 import { ChatbotError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
@@ -71,11 +71,36 @@ export function ActiveChatProvider({ children }: { children: ReactNode }) {
 
   const chatId = chatIdFromUrl ?? newChatIdRef.current;
 
+  // Fetch server-filtered model list (respects which API keys are set)
+  const { data: modelsData } = useSWR<{ models: ChatModel[] }>(
+    `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/models`,
+    fetcher,
+    { revalidateOnFocus: false, dedupingInterval: 3_600_000 }
+  );
+  const serverModelIds = useMemo(
+    () => new Set(modelsData?.models?.map((m) => m.id) ?? []),
+    [modelsData]
+  );
+
   const [currentModelId, setCurrentModelId] = useState(DEFAULT_CHAT_MODEL);
   const currentModelIdRef = useRef(currentModelId);
   useEffect(() => {
     currentModelIdRef.current = currentModelId;
   }, [currentModelId]);
+
+  // On initial server model list load, correct invalid default (e.g. stale cookie)
+  const hasValidatedModels = useRef(false);
+  useEffect(() => {
+    if (hasValidatedModels.current || serverModelIds.size === 0) return;
+    hasValidatedModels.current = true;
+    if (!serverModelIds.has(currentModelId)) {
+      const fallback =
+        (serverModelIds.has(DEFAULT_CHAT_MODEL)
+          ? DEFAULT_CHAT_MODEL
+          : modelsData?.models?.[0]?.id) ?? DEFAULT_CHAT_MODEL;
+      setCurrentModelId(fallback);
+    }
+  }, [serverModelIds, currentModelId, modelsData]);
 
   const [input, setInput] = useState("");
 
@@ -199,10 +224,14 @@ export function ActiveChatProvider({ children }: { children: ReactNode }) {
         .find((row) => row.startsWith("chat-model="))
         ?.split("=")[1];
       if (cookieModel) {
-        setCurrentModelId(decodeURIComponent(cookieModel));
+        const decoded = decodeURIComponent(cookieModel);
+        // Only restore if server confirms this model is available
+        if (serverModelIds.size === 0 || serverModelIds.has(decoded)) {
+          setCurrentModelId(decoded);
+        }
       }
     }
-  }, [chatData, isNewChat]);
+  }, [chatData, isNewChat, serverModelIds]);
 
   const hasAppendedQueryRef = useRef(false);
   useEffect(() => {
