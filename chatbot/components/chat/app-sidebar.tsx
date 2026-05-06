@@ -1,13 +1,15 @@
 "use client";
 
 import {
-  PanelLeftIcon,
+  MoonIcon,
   PenSquareIcon,
+  SunIcon,
   TrashIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "next-auth";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";
@@ -16,7 +18,6 @@ import {
   getChatHistoryPaginationKey,
   SidebarHistory,
 } from "@/components/chat/sidebar-history";
-import { SidebarUserNav } from "@/components/chat/sidebar-user-nav";
 import {
   Sidebar,
   SidebarContent,
@@ -27,8 +28,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -41,13 +40,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { SLLLogo } from "./icons";
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const { setOpenMobile, toggleSidebar } = useSidebar();
   const { mutate } = useSWRConfig();
+  const { theme, setTheme } = useTheme();
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
 
   const handleDeleteAll = () => {
@@ -66,44 +65,17 @@ export function AppSidebar({ user }: { user: User | undefined }) {
 
   return (
     <>
-      <Sidebar collapsible="icon">
+      <Sidebar collapsible="none">
         <SidebarHeader className="pb-2 pt-4">
           <SidebarMenu>
-            <SidebarMenuItem className="flex flex-row items-center justify-between">
-              <div className="group/logo relative flex items-center justify-center">
-                <Link
-                  className="flex items-center px-2 py-1 group-data-[collapsible=icon]:hidden"
-                  href="/"
-                  onClick={() => setOpenMobile(false)}
-                >
-                  <SLLLogo className="text-sidebar-primary" size={190} />
-                </Link>
-                <SidebarMenuButton
-                  asChild
-                  className="hidden size-8 !px-0 items-center justify-center group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:group-hover/logo:opacity-0"
-                  tooltip="Straight Line Leadership"
-                >
-                  <Link href="/" onClick={() => setOpenMobile(false)}>
-                    <PanelLeftIcon className="size-4" />
-                  </Link>
-                </SidebarMenuButton>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      className="pointer-events-none absolute inset-0 size-8 opacity-0 group-data-[collapsible=icon]:pointer-events-auto group-data-[collapsible=icon]:group-hover/logo:opacity-100"
-                      onClick={() => toggleSidebar()}
-                    >
-                      <PanelLeftIcon className="size-4" />
-                    </SidebarMenuButton>
-                  </TooltipTrigger>
-                  <TooltipContent className="hidden md:block" side="right">
-                    Open sidebar
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className="group-data-[collapsible=icon]:hidden">
-                <SidebarTrigger className="text-sidebar-foreground/60 transition-colors duration-150 hover:text-sidebar-foreground" />
-              </div>
+            <SidebarMenuItem>
+              <Link
+                className="flex items-center px-2 py-1"
+                href="/"
+                onClick={() => setOpenMobile(false)}
+              >
+                <SLLLogo className="text-sidebar-primary" size={190} />
+              </Link>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -141,10 +113,23 @@ export function AppSidebar({ user }: { user: User | undefined }) {
           </SidebarGroup>
           <SidebarHistory user={user} />
         </SidebarContent>
-        <SidebarFooter className="border-t border-sidebar-border pt-2 pb-3">
-          {user && <SidebarUserNav user={user} />}
+        <SidebarFooter className="mt-auto border-t border-sidebar-border pt-2 pb-3">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                className="rounded-lg text-[13px] text-sidebar-foreground/50 transition-colors duration-200 hover:text-sidebar-foreground"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? (
+                  <SunIcon className="size-4" />
+                ) : (
+                  <MoonIcon className="size-4" />
+                )}
+                <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarFooter>
-        <SidebarRail />
       </Sidebar>
 
       <AlertDialog

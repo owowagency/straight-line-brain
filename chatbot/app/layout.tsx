@@ -7,8 +7,11 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  title: "Digitaal Brein",
-  description: "Digitaal Brein chatbot.",
+  title: "SLL Chat",
+  description: "Straight-Line Leadership Chat",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export const viewport = {
@@ -69,7 +72,7 @@ export default function RootLayout({
       <body className="antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           disableTransitionOnChange
           enableSystem
         >
